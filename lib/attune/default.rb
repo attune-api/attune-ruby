@@ -7,8 +7,16 @@ module Attune
     ENDPOINT = "http://localhost/".freeze
 
     MIDDLEWARE = Faraday::Builder.new do |builder|
+      # Needed for encoding of BATCH GET requests
       builder.use ParamFlattener
+
+      # Allow one retry per request
+      builder.request :retry, 1
+
+      # Log all requests
       builder.response :logger
+
+      # Raise exceptions for HTTP 4xx/5xx
       builder.response :raise_error
       builder.adapter Faraday.default_adapter
     end
