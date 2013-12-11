@@ -65,7 +65,7 @@ module Attune
       adapter.post(path, ::JSON.dump(params))
     end
     def adapter
-      Faraday.new(url: endpoint, builder: middleware)
+      Faraday.new(url: endpoint, builder: middleware, request: {timeout: timeout})
     end
   end
 end

@@ -3,7 +3,8 @@ module Attune
     KEYS = [
       :endpoint,
       :middleware,
-      :disabled
+      :disabled,
+      :timeout
     ]
 
     attr_accessor *KEYS

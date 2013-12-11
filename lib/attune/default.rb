@@ -17,6 +17,7 @@ module Attune
       c.endpoint = ENDPOINT
       c.middleware = MIDDLEWARE
       c.disabled = false
+      c.timeout = 1
     end
   end
 end
