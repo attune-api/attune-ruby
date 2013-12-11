@@ -6,6 +6,7 @@ module Attune
 
     MIDDLEWARE = Faraday::Builder.new do |builder|
       builder.response :logger
+      builder.response :raise_error
       builder.adapter Faraday.default_adapter
     end
 
