@@ -58,4 +58,30 @@ describe Attune::Client do
 
     expect(rankings).to eq(%W[1004 1003 1002 1001])
   end
+
+  it "can multi_get_rankings" do
+    stubs.get("/rankings?ids=anonymous%3D0cddbc0-6114-11e3-949a-0800200c9a66%26view%3Db%252Fmens-pants%26entity_collection%3Dproducts%26entities%3D1001%252C%252C1002%252C%252C1003%252C%252C1004%26ip%3Dnone&ids=anonymous%3D0cddbc0-6114-11e3-949a-0800200c9a66%26view%3Db%252Fmens-pants%26entity_collection%3Dproducts%26entities%3D2001%252C%252C2002%252C%252C2003%252C%252C2004%26ip%3Dnone") do
+      [200, {}, %[{"results":{"fake0":{"ranking":["1004","1003","1002","1001"]},"fake1":{"ranking":["2004","2003","2002","2001"]}}}]]
+    end
+    rankings = client.multi_get_rankings([
+      {
+        id: '0cddbc0-6114-11e3-949a-0800200c9a66',
+        view: 'b/mens-pants',
+        collection: 'products',
+        entities: %w[1001, 1002, 1003, 1004]
+      },
+      {
+        id: '0cddbc0-6114-11e3-949a-0800200c9a66',
+        view: 'b/mens-pants',
+        collection: 'products',
+        entities: %w[2001, 2002, 2003, 2004]
+      }
+    ])
+    stubs.verify_stubbed_calls
+
+    expect(rankings).to eq [
+      %W[1004 1003 1002 1001],
+      %W[2004 2003 2002 2001]
+    ]
+  end
 end
