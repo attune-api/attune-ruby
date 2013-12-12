@@ -1,15 +1,37 @@
 require 'json'
 
 module Attune
+
+  # Client for the attune
   class Client
     include Attune::Configurable
 
+    # Initialize a new Client
+    #
+    # == Examples
+    #   client = Attune::Client.new(
+    #     endpoint: "http://example.com:8080/"
+    #     timeout:  10
+    #   )
+    #
+    # == Parameters
+    # * options<~Hash> - Options for connection (see Attune::Configurable)
+    #
+    # == Returns
+    # * A new client object
     def initialize options={}
       Attune::Configurable::KEYS.each do |key|
         send("#{key}=", options[key] || Attune::Default.send(key))
       end
     end
 
+    # Create an anonymous tracked user
+    #
+    # @param [Hash] options
+    # @option options [String] :id optional. An id will be generated if this is not provided
+    # @option options [String] :user_agent The user agent for the application used by the anonymous users
+    # @return id [String]
+    # @raise [ArgumentError] if user_agent is not provided
     def create_anonymous options
       raise ArgumentError, "user_agent required" unless options[:user_agent]
       if id = options[:id]
@@ -21,12 +43,27 @@ module Attune
       end
     end
 
+    # Returns all entities from the specified collection in order of the user’s preference
+    #
+    # @param [Hash] options
+    # @option options [String] :id The anonymous user id for whom to grab rankings
+    # @option options [String] :view The page or app URN on which the entities will be displayed
+    # @option options [String] :collection name of the collection of entities
+    # @option options [Array<String>] :entities entities to be ranked
+    # @option options [String] :ip ip address of remote user. Used for geolocation (optional)
+    # @option options [String] :customer id of customer (optional)
+    # @return ranking [Array<String>] The entities in their ranked order
+    # @raise [ArgumentError] if required parameters are missing
     def get_rankings options
       qs = encoded_ranking_params(options)
       response = get("rankings/#{qs}", customer: options.fetch(:customer, 'none'))
       JSON.parse(response.body)['ranking']
     end
 
+    # Get multiple rankings in one call
+    #
+    # @param [Array<Hash>] multi_options An array of options (see #get_rankings)
+    # @return [Array<Array<String>>] rankings
     def multi_get_rankings multi_options
       requests = multi_options.map do |options|
         encoded_ranking_params(options)
@@ -38,6 +75,10 @@ module Attune
       end
     end
 
+    # Binds an anonymous user to a customer id
+    #
+    # @param [String] id The anonymous visitor to bind
+    # @param [String] customer_id The customer id to bind
     def bind id, customer_id
       put("bindings/anonymous=#{id}&customer=#{customer_id}")
       true

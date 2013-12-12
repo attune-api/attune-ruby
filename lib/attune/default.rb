@@ -1,6 +1,7 @@
 require 'attune/param_flattener'
 
 module Attune
+  # Default options
   module Default
     extend Configurable
 
