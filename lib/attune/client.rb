@@ -6,19 +6,16 @@ module Attune
   class Client
     include Attune::Configurable
 
-    # Initialize a new Client
+    # Initializes a new Client
     #
-    # == Examples
+    # @example
     #   client = Attune::Client.new(
-    #     endpoint: "http://example.com:8080/"
+    #     endpoint: "http://example.com:8080/",
     #     timeout:  10
     #   )
     #
-    # == Parameters
-    # * options<~Hash> - Options for connection (see Attune::Configurable)
-    #
-    # == Returns
-    # * A new client object
+    # @param [Hash] options Options for connection (see Attune::Configurable)
+    # @returns A new client object
     def initialize options={}
       Attune::Configurable::KEYS.each do |key|
         send("#{key}=", options[key] || Attune::Default.send(key))
@@ -27,6 +24,15 @@ module Attune
 
     # Create an anonymous tracked user
     #
+    # @example Generate a new id (preferred)
+    #   anonymous_id = client.create_anonymous(
+    #     user_agent: 'Mozilla/5.0'
+    #   )
+    # @example Create using an existing id
+    #   client.create_anonymous(
+    #     id: '0cddbc0-6114-11e3-949a-0800200c9a66',
+    #     user_agent: 'Mozilla/5.0'
+    #   )
     # @param [Hash] options
     # @option options [String] :id optional. An id will be generated if this is not provided
     # @option options [String] :user_agent The user agent for the application used by the anonymous users
@@ -43,8 +49,15 @@ module Attune
       end
     end
 
-    # Returns all entities from the specified collection in order of the user’s preference
+    # Returns all entities from the specified collection in order of the user's preference
     #
+    # @example
+    #   rankings = client.get_rankings(
+    #     id: '0cddbc0-6114-11e3-949a-0800200c9a66',
+    #     view: 'b/mens-pants',
+    #     collection: 'products',
+    #     entities: %w[1001, 1002, 1003, 1004]
+    #   )
     # @param [Hash] options
     # @option options [String] :id The anonymous user id for whom to grab rankings
     # @option options [String] :view The page or app URN on which the entities will be displayed
@@ -62,6 +75,21 @@ module Attune
 
     # Get multiple rankings in one call
     #
+    # @example
+    #   rankings = client.get_rankings([
+    #     {
+    #       id: '0cddbc0-6114-11e3-949a-0800200c9a66',
+    #       view: 'b/mens-pants',
+    #       collection: 'products',
+    #       entities: %w[1001, 1002, 1003, 1004]
+    #     },
+    #     {
+    #       id: '0cddbc0-6114-11e3-949a-0800200c9a66',
+    #       view: 'b/mens-pants',
+    #       collection: 'products',
+    #       entities: %w[2001, 2002, 2003, 2004]
+    #     }
+    #   ])
     # @param [Array<Hash>] multi_options An array of options (see #get_rankings)
     # @return [Array<Array<String>>] rankings
     def multi_get_rankings multi_options
@@ -79,6 +107,11 @@ module Attune
     #
     # @param [String] id The anonymous visitor to bind
     # @param [String] customer_id The customer id to bind
+    # @example
+    #   rankings = client.bind(
+    #     '25892e17-80f6-415f-9c65-7395632f022',
+    #     'cd171f7c-560d-4a62-8d65-16b87419a58'
+    #   )
     def bind id, customer_id
       put("bindings/anonymous=#{id}&customer=#{customer_id}")
       true
