@@ -1,7 +1,9 @@
 require 'spec_helper'
 
 describe Attune::Client do
-  subject { described_class.new(options) }
+  let(:client){ described_class.new(options) }
+  subject { client }
+
   context "with defaults" do
     let(:options){ {} }
     specify { expect(subject.endpoint).to eq(Attune::Default::ENDPOINT) }
@@ -11,5 +13,49 @@ describe Attune::Client do
     let(:endpoint){ 'http://example.com/' }
     let(:options){ {endpoint: endpoint} }
     specify { expect(subject.endpoint).to eq(endpoint) }
+  end
+
+  let(:options){ {endpoint: 'http://example.com:8080/', middleware: middleware} }
+  let(:stubs) { Faraday::Adapter::Test::Stubs.new }
+  let(:middleware) do
+    Faraday::Builder.new do |builder|
+      builder.use ParamFlattener
+      builder.adapter :test, stubs
+    end
+  end
+
+  it "can create_anonymous generating an id" do
+    stubs.post("anonymous", %[{"user_agent":"Mozilla/5.0"}]){ [200, {location: 'urn:id:abcd123'}, nil] }
+    id = client.create_anonymous(user_agent: 'Mozilla/5.0')
+    stubs.verify_stubbed_calls
+
+    expect(id).to eq('abcd123')
+  end
+
+  it "can bind" do
+    stubs.put("bindings/anonymous=abcd123&customer=foobar"){ [200, {}, nil] }
+    client.bind('abcd123', 'foobar')
+    stubs.verify_stubbed_calls
+  end
+
+  it "can create_anonymous using existing id" do
+    stubs.put("anonymous/abcd123", %[{"user_agent":"Mozilla/5.0"}]){ [200, {}, nil] }
+    id = client.create_anonymous(id: 'abcd123', user_agent: 'Mozilla/5.0')
+    stubs.verify_stubbed_calls
+
+    expect(id).to eq('abcd123')
+  end
+
+  it "can get_rankings" do
+    stubs.get("rankings/anonymous=abcd123&view=b%2Fmens-pants&entity_collection=products&entities=1001%2C%2C1002%2C%2C1003%2C%2C1004&ip=none"){ [200, {}, %[{"ranking":["1004","1003","1002","1001"]}]] }
+    rankings = client.get_rankings(
+      id: 'abcd123',
+      view: 'b/mens-pants',
+      collection: 'products',
+      entities: %w[1001, 1002, 1003, 1004]
+    )
+    stubs.verify_stubbed_calls
+
+    expect(rankings).to eq(["1004", "1003", "1002", "1001"])
   end
 end
