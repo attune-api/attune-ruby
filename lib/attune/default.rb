@@ -1,3 +1,5 @@
+require 'attune/param_flattener'
+
 module Attune
   module Default
     extend Configurable
@@ -5,6 +7,7 @@ module Attune
     ENDPOINT = "http://localhost/".freeze
 
     MIDDLEWARE = Faraday::Builder.new do |builder|
+      builder.use ParamFlattener
       builder.response :logger
       builder.response :raise_error
       builder.adapter Faraday.default_adapter

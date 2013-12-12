@@ -22,16 +22,20 @@ module Attune
     end
 
     def get_rankings options
-      params = {
-        anonymous: options.fetch(:id),
-        view: options.fetch(:view),
-        entity_collection: options.fetch(:collection),
-        entities: options.fetch(:entities).join(','),
-        ip: options.fetch(:ip, 'none')
-      }
-      qs = Faraday::Utils::ParamsHash[params].to_query
+      qs = encoded_ranking_params(options)
       response = get("rankings/#{qs}", customer: options.fetch(:customer, 'none'))
       JSON.parse(response.body)['ranking']
+    end
+
+    def multi_get_rankings multi_options
+      requests = multi_options.map do |options|
+        encoded_ranking_params(options)
+      end
+      response = get("rankings", ids: requests)
+      results = JSON.parse(response.body)['results']
+      results.values.map do |result|
+        result['ranking']
+      end
     end
 
     def bind id, customer_id
@@ -40,6 +44,17 @@ module Attune
     end
 
     private
+    def encoded_ranking_params options
+      params = {
+        anonymous: options.fetch(:id),
+        view: options.fetch(:view),
+        entity_collection: options.fetch(:collection),
+        entities: options.fetch(:entities).join(','),
+        ip: options.fetch(:ip, 'none')
+      }
+      Faraday::Utils::ParamsHash[params].to_query
+    end
+
     def get path, params={}
       adapter.get(path, params)
     end

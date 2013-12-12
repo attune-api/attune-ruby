@@ -29,5 +29,15 @@ describe "remote requests" do
       result.should be_an Array
       result.sort.should == entities.map(&:to_s).sort
     end
+
+    it "can batch get rankings" do
+      id = client.create_anonymous(id: '123456', user_agent: 'Mozilla/5.0')
+      client.bind(id, '654321')
+      results = client.multi_get_rankings([id: '123456', view: 'b/mens-pants', collection: 'products', entities: entities])
+      results.should be_an Array
+
+      result, = *results
+      result.sort.should == entities.map(&:to_s).sort
+    end
   end
 end
