@@ -16,7 +16,7 @@ module Attune
     #
     # @param [Hash] options Options for connection (see Attune::Configurable)
     # @returns A new client object
-    def initialize options={}
+    def initialize(options={})
       Attune::Configurable::KEYS.each do |key|
         send("#{key}=", options[key] || Attune::Default.send(key))
       end
@@ -38,7 +38,7 @@ module Attune
     # @option options [String] :user_agent The user agent for the application used by the anonymous users
     # @return id [String]
     # @raise [ArgumentError] if user_agent is not provided
-    def create_anonymous options
+    def create_anonymous(options)
       raise ArgumentError, "user_agent required" unless options[:user_agent]
       if id = options[:id]
         response = put("anonymous/#{id}", {user_agent: options[:user_agent]})
@@ -67,7 +67,7 @@ module Attune
     # @option options [String] :customer id of customer (optional)
     # @return ranking [Array<String>] The entities in their ranked order
     # @raise [ArgumentError] if required parameters are missing
-    def get_rankings options
+    def get_rankings(options)
       qs = encoded_ranking_params(options)
       response = get("rankings/#{qs}", customer: options.fetch(:customer, 'none'))
       JSON.parse(response.body)['ranking']
@@ -92,7 +92,7 @@ module Attune
     #   ])
     # @param [Array<Hash>] multi_options An array of options (see #get_rankings)
     # @return [Array<Array<String>>] rankings
-    def multi_get_rankings multi_options
+    def multi_get_rankings(multi_options)
       requests = multi_options.map do |options|
         encoded_ranking_params(options)
       end
@@ -112,13 +112,13 @@ module Attune
     #     '25892e17-80f6-415f-9c65-7395632f022',
     #     'cd171f7c-560d-4a62-8d65-16b87419a58'
     #   )
-    def bind id, customer_id
+    def bind(id, customer_id)
       put("bindings/anonymous=#{id}&customer=#{customer_id}")
       true
     end
 
     private
-    def encoded_ranking_params options
+    def encoded_ranking_params(options)
       params = {
         anonymous: options.fetch(:id),
         view: options.fetch(:view),
@@ -129,13 +129,13 @@ module Attune
       Faraday::Utils::ParamsHash[params].to_query
     end
 
-    def get path, params={}
+    def get(path, params={})
       adapter.get(path, params)
     end
-    def put path, params={}
+    def put(path, params={})
       adapter.put(path, ::JSON.dump(params))
     end
-    def post path, params={}
+    def post(path, params={})
       adapter.post(path, ::JSON.dump(params))
     end
     def adapter
