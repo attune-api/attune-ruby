@@ -56,6 +56,6 @@ describe Attune::Client do
     )
     stubs.verify_stubbed_calls
 
-    expect(rankings).to eq(["1004", "1003", "1002", "1001"])
+    expect(rankings).to eq(%W[1004 1003 1002 1001])
   end
 end
