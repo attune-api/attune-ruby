@@ -18,13 +18,13 @@ And then execute:
 
 Requests are performed through a client object
 
-```
+``` ruby
 client = Attune::Client.new
 ```
 
 Visitors to the application should be tagged with an anonymous user id
 
-```
+``` ruby
 class ApplicationController
   before_filter do
     session[:attune_id] ||= attune_client.create_anonymous(user_agent: request.env["HTTP_USER_AGENT"])
@@ -39,7 +39,7 @@ end
 
 The user id can be bound to a customer id at login
 
-```
+``` ruby
 class SessionsController
   # ...
 
@@ -52,7 +52,7 @@ end
 
 The client can then perform rankings
 
-```
+``` ruby
 class ProductsController
   def index
     @products = Product.all
@@ -75,7 +75,7 @@ end
 
 Attune can be configured globally
 
-```
+``` ruby
 Attune.configure do |c|
   c.endpoint = "http://example.com/"
   c.timeout  = 5
@@ -84,7 +84,7 @@ end
 
 Settings can also be overridden on a client object
 
-```
+``` ruby
 client = Attune::Client.new(timeout: 2)
 ```
 
