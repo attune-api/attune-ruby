@@ -1,4 +1,5 @@
 require 'attune/param_flattener'
+require "attune/json_logger"
 
 module Attune
   # Default options
@@ -15,7 +16,7 @@ module Attune
       builder.request :retry, 1
 
       # Log all requests
-      builder.response :logger
+      builder.use Attune::JsonLogger
 
       # Raise exceptions for HTTP 4xx/5xx
       builder.response :raise_error
