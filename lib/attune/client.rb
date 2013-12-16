@@ -62,7 +62,7 @@ module Attune
     # @option options [String] :id The anonymous user id for whom to grab rankings
     # @option options [String] :view The page or app URN on which the entities will be displayed
     # @option options [String] :collection name of the collection of entities
-    # @option options [Array<String>] :entities entities to be ranked
+    # @option options [Array<String>] :entities entities to be ranked. These should be numeric strings or integers.
     # @option options [String] :ip ip address of remote user. Used for geolocation (optional)
     # @option options [String] :customer id of customer (optional)
     # @return ranking [Array<String>] The entities in their ranked order
