@@ -28,6 +28,7 @@ module Attune
           total: elapsed_time * 1000
         }
       )
+      response
     end
     def log(data)
       @logger.info JSON.dump(data)
