@@ -1,10 +1,11 @@
 require 'benchmark'
+require 'logger'
 
 module Attune
   class JsonLogger < Faraday::Middleware
-    def initialize app, logger
+    def initialize app, logger=nil
       super(app)
-      @logger = logger
+      @logger = logger || Logger.new(STDERR)
     end
     def call(env)
       time = (Time.now.to_f * 1000).to_i
