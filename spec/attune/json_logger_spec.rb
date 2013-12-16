@@ -20,7 +20,9 @@ describe Attune::JsonLogger do
     SecureRandom.stub(:uuid).and_return("eaa45af2-efc3-45ef-90da-9bcb56758e77")
     Time.stub(:now).and_return(12345)
 
-    connection.get("/test")
+    response = connection.get("/test")
+    response.status.should == 200
+    response.body.should == "foobar"
 
     expect(logged).to eq %[{"ref":null,"v":1,"protocol":"http","host":"example.com","path":"/test","t":12345000,"r_id":"eaa45af2-efc3-45ef-90da-9bcb56758e77","status":200,"ua":"Faraday v0.8.8","method":"get","perf":{"total":120.0}}]
   end
