@@ -19,7 +19,7 @@ describe Attune::Client do
   let(:stubs) { Faraday::Adapter::Test::Stubs.new }
   let(:middleware) do
     Faraday::Builder.new do |builder|
-      builder.use ParamFlattener
+      builder.use Attune::ParamFlattener
       builder.adapter :test, stubs
     end
   end

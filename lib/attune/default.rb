@@ -10,7 +10,7 @@ module Attune
 
     MIDDLEWARE = Faraday::Builder.new do |builder|
       # Needed for encoding of BATCH GET requests
-      builder.use ParamFlattener
+      builder.use Attune::ParamFlattener
 
       # Allow one retry per request
       builder.request :retry, 1
