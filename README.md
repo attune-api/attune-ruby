@@ -92,14 +92,14 @@ client = Attune::Client.new(timeout: 2)
 ```
 
 See the documentation for
-[Attune::Configurable](http://rdoc.info/github/freerunningtech/attune-ruby/master/Attune/Configurable)
+[Attune::Configurable](http://rdoc.info/github/DigitalStripe/attune-ruby/master/Attune/Configurable)
 and the
-[default configuration](http://rdoc.info/github/freerunningtech/attune-ruby/master/Attune/Default)
+[default configuration](http://rdoc.info/github/DigitalStripe/attune-ruby/master/Attune/Default)
 for more details.
 
 ## Contributing
 
-1. Fork it ( http://github.com/freerunningtech/attune/fork )
+1. Fork it ( http://github.com/DigitalStripe/attune/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
