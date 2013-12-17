@@ -1,6 +1,6 @@
 # Attune
 
-A client for the [Attune ranking API](http://attune.co/). Build using the excellent [faraday](https://github.com/lostisland/faraday) library.
+A client for the [Attune ranking API](http://attune.co/). Built using the excellent [faraday](https://github.com/lostisland/faraday) library.
 
 ## Installation
 
