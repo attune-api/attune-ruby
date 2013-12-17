@@ -1,4 +1,5 @@
 require 'benchmark'
+require 'securerandom'
 require 'logger'
 
 module Attune
