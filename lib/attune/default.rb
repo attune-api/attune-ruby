@@ -1,4 +1,5 @@
 require 'attune/param_flattener'
+require "attune/call_dropping"
 require "attune/json_logger"
 
 module Attune
@@ -11,6 +12,9 @@ module Attune
     MIDDLEWARE = Faraday::Builder.new do |builder|
       # Needed for encoding of BATCH GET requests
       builder.use Attune::ParamFlattener
+
+      # Log all requests
+      builder.use Attune::CallDropping
 
       # Allow one retry per request
       builder.request :retry, 1
