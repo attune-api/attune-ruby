@@ -131,13 +131,26 @@ module Attune
 
     def get(path, params={})
       adapter.get(path, params)
+    rescue Faraday::ClientError => e
+      handle_exception(e)
     end
+
     def put(path, params={})
       adapter.put(path, ::JSON.dump(params))
+    rescue Faraday::ClientError => e
+      handle_exception(e)
     end
+
     def post(path, params={})
       adapter.post(path, ::JSON.dump(params))
+    rescue Faraday::ClientError => e
+      handle_exception(e)
     end
+
+    def handle_exception e
+      raise e
+    end
+
     def adapter
       Faraday.new(url: endpoint, builder: middleware, request: {timeout: timeout})
     end
