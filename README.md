@@ -91,6 +91,12 @@ Settings can also be overridden on a client object
 client = Attune::Client.new(timeout: 2)
 ```
 
+See the documentation for
+[Attune::Configurable](http://rdoc.info/github/freerunningtech/attune-ruby/master/Attune/Configurable)
+and the
+[default configuration](http://rdoc.info/github/freerunningtech/attune-ruby/master/Attune/Default)
+for more details.
+
 ## Contributing
 
 1. Fork it ( http://github.com/freerunningtech/attune/fork )
