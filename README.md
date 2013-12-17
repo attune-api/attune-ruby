@@ -55,15 +55,18 @@ The client can then perform rankings
 ``` ruby
 class ProductsController
   def index
-    @products = Product.all
+    @products = sorted(Product.all)
+  end
 
+  private
+  def sorted products
     ranking = attune_client.get_ranking(
       id: session[:attune_id],
       view: request.fullpath,
       collection: 'products',
-      entities: @products.map(&:id)
+      entities: products.map(&:id)
     )
-    @products.sort_by do |product|
+    products.sort_by do |product|
       ranking.index(product.id.to_s)
     end
   end
