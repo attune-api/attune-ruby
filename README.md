@@ -104,7 +104,9 @@ for more details.
 
 For testing and development, the ranking API can be simulated using.
 
-    Attune.test_mode!
+``` ruby
+Attune.test_mode!
+```
 
 In this mode no API calls will be made, and rankings will be returned in their original order.
 Calling `.test_mode!` is equivalent to setting `disabled` to true and `exception_handler` to `:mock`.
