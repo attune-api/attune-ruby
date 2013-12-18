@@ -2,6 +2,10 @@
 
 A client for the [Attune ranking API](http://attune.co/). Built using the excellent [faraday](https://github.com/lostisland/faraday) library.
 
+* [Github](https://github.com/DigitalStripe/attune-ruby)
+* [RubyGems](https://rubygems.org/gems/attune)
+* [Documentation](http://rdoc.info/github/DigitalStripe/attune-ruby)
+
 ## Installation
 
 Add this line to your application's Gemfile:
