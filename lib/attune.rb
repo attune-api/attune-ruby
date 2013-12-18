@@ -9,6 +9,10 @@ module Attune
   def self.client
     Client.new
   end
+
+  # Simulate all API calls
+  # This is equivalent to setting disabled to true and exception_handler to
+  # :mock
   def self.test_mode!
     configure do |c|
       c.exception_handler = :mock

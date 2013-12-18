@@ -77,7 +77,6 @@ class ProductsController
 end
 ```
 
-
 ### Configuration
 
 Attune can be configured globally
@@ -100,6 +99,15 @@ See the documentation for
 and the
 [default configuration](http://rdoc.info/github/DigitalStripe/attune-ruby/master/Attune/Default)
 for more details.
+
+### Testing
+
+For testing and development, the ranking API can be simulated using.
+
+    Attune.test_mode!
+
+In this mode no API calls will be made, and rankings will be returned in their original order.
+Calling `.test_mode!` is equivalent to setting `disabled` to true and `exception_handler` to `:mock`.
 
 ## Contributing
 
