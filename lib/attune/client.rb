@@ -1,8 +1,12 @@
 require 'json'
 
 module Attune
+  class DisabledException < Faraday::Error::ClientError
+    def initialize(message="Attune library disabled though config")
+      super(message)
+    end
+  end
 
-  # Client for the attune
   class Client
     include Attune::Configurable
 
@@ -42,11 +46,15 @@ module Attune
     def create_anonymous(options)
       raise ArgumentError, "user_agent required" unless options[:user_agent]
       if id = options[:id]
-        response = put("anonymous/#{id}", {user_agent: options[:user_agent]})
+        put("anonymous/#{id}", {user_agent: options[:user_agent]})
         id
       else
-        response = post("anonymous", {user_agent: options[:user_agent]})
-        response[:location][/\Aurn:id:([a-z0-9\-]+)\Z/, 1]
+        if response = post("anonymous", {user_agent: options[:user_agent]})
+          response[:location][/\Aurn:id:([a-z0-9\-]+)\Z/, 1]
+        else
+          # Return a new UUID if there was an exception and we're in mock mode
+          SecureRandom.uuid
+        end
       end
     end
 
@@ -71,8 +79,12 @@ module Attune
     # @raise [Faraday::Error] if the request fails or exceeds the timeout
     def get_rankings(options)
       qs = encoded_ranking_params(options)
-      response = get("rankings/#{qs}", customer: options.fetch(:customer, 'none'))
-      JSON.parse(response.body)['ranking']
+      if response = get("rankings/#{qs}", customer: options.fetch(:customer, 'none'))
+        JSON.parse(response.body)['ranking']
+      else
+        # In mock mode: return the entities in the order passed in
+        options[:entities]
+      end
     end
 
     # Get multiple rankings in one call
@@ -99,10 +111,16 @@ module Attune
       requests = multi_options.map do |options|
         encoded_ranking_params(options)
       end
-      response = get("rankings", ids: requests)
-      results = JSON.parse(response.body)['results']
-      results.values.map do |result|
-        result['ranking']
+      if response = get("rankings", ids: requests)
+        results = JSON.parse(response.body)['results']
+        results.values.map do |result|
+          result['ranking']
+        end
+      else
+        # In mock mode: return the entities in the order passed in
+        multi_options.map do |options|
+          options[:entities]
+        end
       end
     end
 
@@ -152,10 +170,15 @@ module Attune
     end
 
     def handle_exception e
-      raise e
+      if exception_handler == :mock
+        nil
+      else
+        raise e
+      end
     end
 
     def adapter
+      raise DisabledException if disabled?
       Faraday.new(url: endpoint, builder: middleware, request: {timeout: timeout})
     end
   end

@@ -31,6 +31,7 @@ module Attune
       c.endpoint = ENDPOINT
       c.middleware = MIDDLEWARE
       c.disabled = false
+      c.exception_handler = :raise
       c.timeout = 1
     end
   end

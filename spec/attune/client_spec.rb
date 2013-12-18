@@ -41,6 +41,46 @@ describe Attune::Client do
     end
   end
 
+  describe "disabled" do
+    context "with raise" do
+      let(:options){ {disabled: true, exception_handler: :raise} }
+      it "will raise DisalbedException" do
+        expect {
+          client.create_anonymous(user_agent: 'Mozilla/5.0')
+        }.to raise_exception(Attune::DisabledException)
+      end
+    end
+    context "with mock" do
+      let(:options){ {disabled: true, exception_handler: :mock} }
+      it "mocks create_anonymous with an id" do
+        result = client.create_anonymous(id: '12345', user_agent: 'Mozilla/5.0')
+        expect(result).to eq('12345')
+      end
+      it "mocks create_anonymous with no id" do
+        result = client.create_anonymous(user_agent: 'Mozilla/5.0')
+        expect(result).to match(/^[a-z0-9\-]+$/)
+      end
+      it "mocks get_rankings" do
+        result = client.get_rankings(
+          id: 'abcd123',
+          view: 'b/mens-pants',
+          collection: 'products',
+          entities: %w[1001, 1002, 1003, 1004]
+        )
+        expect(result).to eq %w[1001, 1002, 1003, 1004]
+      end
+      it "mocks multi_get_rankings" do
+        result = client.multi_get_rankings([
+          id: 'abcd123',
+          view: 'b/mens-pants',
+          collection: 'products',
+          entities: %w[1001, 1002, 1003, 1004]
+        ])
+        expect(result).to eq [%w[1001, 1002, 1003, 1004]]
+      end
+    end
+  end
+
   it "can create_anonymous generating an id" do
     stubs.post("anonymous", %[{"user_agent":"Mozilla/5.0"}]){ [200, {location: 'urn:id:abcd123'}, nil] }
     id = client.create_anonymous(user_agent: 'Mozilla/5.0')
