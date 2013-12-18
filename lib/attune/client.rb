@@ -38,6 +38,7 @@ module Attune
     # @option options [String] :user_agent The user agent for the application used by the anonymous users
     # @return id [String]
     # @raise [ArgumentError] if user_agent is not provided
+    # @raise [Faraday::Error] if the request fails or exceeds the timeout
     def create_anonymous(options)
       raise ArgumentError, "user_agent required" unless options[:user_agent]
       if id = options[:id]
@@ -67,6 +68,7 @@ module Attune
     # @option options [String] :customer id of customer (optional)
     # @return ranking [Array<String>] The entities in their ranked order
     # @raise [ArgumentError] if required parameters are missing
+    # @raise [Faraday::Error] if the request fails or exceeds the timeout
     def get_rankings(options)
       qs = encoded_ranking_params(options)
       response = get("rankings/#{qs}", customer: options.fetch(:customer, 'none'))
@@ -92,6 +94,7 @@ module Attune
     #   ])
     # @param [Array<Hash>] multi_options An array of options (see #get_rankings)
     # @return [Array<Array<String>>] rankings
+    # @raise [Faraday::Error] if the request fails or exceeds the timeout
     def multi_get_rankings(multi_options)
       requests = multi_options.map do |options|
         encoded_ranking_params(options)
@@ -112,6 +115,7 @@ module Attune
     #     '25892e17-80f6-415f-9c65-7395632f022',
     #     'cd171f7c-560d-4a62-8d65-16b87419a58'
     #   )
+    # @raise [Faraday::Error] if the request fails or exceeds the timeout
     def bind(id, customer_id)
       put("bindings/anonymous=#{id}&customer=#{customer_id}")
       true

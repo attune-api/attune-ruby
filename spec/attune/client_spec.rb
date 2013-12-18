@@ -24,6 +24,23 @@ describe Attune::Client do
     end
   end
 
+  describe "API errors" do
+    it "will raise timeout" do
+      stubs.post("anonymous", %[{"user_agent":"Mozilla/5.0"}]){ raise Faraday::Error::TimeoutError.new("test") }
+      expect {
+        client.create_anonymous(user_agent: 'Mozilla/5.0')
+      }.to raise_exception(Faraday::Error::TimeoutError)
+      stubs.verify_stubbed_calls
+    end
+    it "will raise ConnectionFailed" do
+      stubs.post("anonymous", %[{"user_agent":"Mozilla/5.0"}]){ raise Faraday::Error::ConnectionFailed.new("test") }
+      expect {
+        client.create_anonymous(user_agent: 'Mozilla/5.0')
+      }.to raise_exception(Faraday::Error::ConnectionFailed)
+      stubs.verify_stubbed_calls
+    end
+  end
+
   it "can create_anonymous generating an id" do
     stubs.post("anonymous", %[{"user_agent":"Mozilla/5.0"}]){ [200, {location: 'urn:id:abcd123'}, nil] }
     id = client.create_anonymous(user_agent: 'Mozilla/5.0')
