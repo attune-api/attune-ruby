@@ -64,7 +64,7 @@ class ProductsController
 
   private
   def sorted products
-    ranking = attune_client.get_ranking(
+    ranking = attune_client.get_rankings(
       id: session[:attune_id],
       view: request.fullpath,
       collection: 'products',
