@@ -90,7 +90,7 @@ module Attune
     # Get multiple rankings in one call
     #
     # @example
-    #   rankings = client.get_rankings([
+    #   rankings = client.multi_get_rankings([
     #     {
     #       id: '0cddbc0-6114-11e3-949a-0800200c9a66',
     #       view: 'b/mens-pants',
