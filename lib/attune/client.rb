@@ -114,7 +114,7 @@ module Attune
       if response = get("rankings", ids: requests)
         results = JSON.parse(response.body)['results']
         requests.map do |request|
-          results[request]['ranking']
+          results[CGI::escape(request)]['ranking']
         end
       else
         # In mock mode: return the entities in the order passed in

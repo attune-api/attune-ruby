@@ -116,10 +116,10 @@ describe Attune::Client do
     expect(rankings).to eq(%W[1004 1003 1002 1001])
   end
 
-  let(:req1){ 'anonymous=0cddbc0-6114-11e3-949a-0800200c9a66&view=b%2Fmens-pants&entity_collection=products&entities=1001%2C%2C1002%2C%2C1003%2C%2C1004&ip=none' }
-  let(:req2){ 'anonymous=0cddbc0-6114-11e3-949a-0800200c9a66&view=b%2Fmens-pants&entity_collection=products&entities=2001%2C%2C2002%2C%2C2003%2C%2C2004&ip=none' }
+  let(:req1){ CGI::escape 'anonymous=0cddbc0-6114-11e3-949a-0800200c9a66&view=b%2Fmens-pants&entity_collection=products&entities=1001%2C%2C1002%2C%2C1003%2C%2C1004&ip=none' }
+  let(:req2){ CGI::escape 'anonymous=0cddbc0-6114-11e3-949a-0800200c9a66&view=b%2Fmens-pants&entity_collection=products&entities=2001%2C%2C2002%2C%2C2003%2C%2C2004&ip=none' }
   it "can multi_get_rankings" do
-    stubs.get("/rankings?ids=#{CGI::escape req1}&ids=#{CGI::escape req2}") do
+    stubs.get("/rankings?ids=#{req1}&ids=#{req2}") do
       [200, {}, %[{"results":{"#{req1}":{"ranking":["1004","1003","1002","1001"]},"#{req2}":{"ranking":["2004","2003","2002","2001"]}}}]]
     end
     rankings = client.multi_get_rankings([
