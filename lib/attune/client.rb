@@ -113,8 +113,13 @@ module Attune
       end
       if response = get("rankings", ids: requests)
         results = JSON.parse(response.body)['results']
+
+        # Order of encoded paramaters may change, so we must parse them
+        results = Hash[results.map do |request, result|
+          [CGI.parse(request), result]
+        end]
         requests.map do |request|
-          results[CGI::escape(request)]['ranking']
+          results[CGI.parse(request)]['ranking']
         end
       else
         # In mock mode: return the entities in the order passed in

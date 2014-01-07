@@ -119,8 +119,30 @@ describe Attune::Client do
   let(:req1){ CGI::escape 'anonymous=0cddbc0-6114-11e3-949a-0800200c9a66&view=b%2Fmens-pants&entity_collection=products&entities=1001%2C%2C1002%2C%2C1003%2C%2C1004&ip=none' }
   let(:req2){ CGI::escape 'anonymous=0cddbc0-6114-11e3-949a-0800200c9a66&view=b%2Fmens-pants&entity_collection=products&entities=2001%2C%2C2002%2C%2C2003%2C%2C2004&ip=none' }
   it "can multi_get_rankings" do
-    stubs.get("/rankings?ids=#{req1}&ids=#{req2}") do
-      [200, {}, %[{"results":{"#{req1}":{"ranking":["1004","1003","1002","1001"]},"#{req2}":{"ranking":["2004","2003","2002","2001"]}}}]]
+    stubs.get("/rankings?ids=anonymous%3D0cddbc0-6114-11e3-949a-0800200c9a66%26view%3Db%252Fmens-pants%26entity_collection%3Dproducts%26entities%3D1001%252C%252C1002%252C%252C1003%252C%252C1004%26ip%3Dnone&ids=anonymous%3D0cddbc0-6114-11e3-949a-0800200c9a66%26view%3Db%252Fmens-pants%26entity_collection%3Dproducts%26entities%3D2001%252C%252C2002%252C%252C2003%252C%252C2004%26ip%3Dnone") do
+      [200, {}, <<-JSON]
+{
+    "errors": {},
+    "results": {
+        "anonymous=0cddbc0-6114-11e3-949a-0800200c9a66&entities=1001%2C%2C1002%2C%2C1003%2C%2C1004&entity_collection=products&ip=none&view=b%2Fmens-pants": {
+            "ranking": [
+                "1004",
+                "1003",
+                "1002",
+                "1001"
+            ]
+        },
+        "anonymous=0cddbc0-6114-11e3-949a-0800200c9a66&entities=2001%2C%2C2002%2C%2C2003%2C%2C2004&entity_collection=products&ip=none&view=b%2Fmens-pants": {
+            "ranking": [
+                "2004",
+                "2003",
+                "2002",
+                "2001"
+            ]
+        }
+    }
+}
+      JSON
     end
     rankings = client.multi_get_rankings([
       {
