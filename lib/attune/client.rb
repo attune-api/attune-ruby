@@ -113,8 +113,8 @@ module Attune
       end
       if response = get("rankings", ids: requests)
         results = JSON.parse(response.body)['results']
-        results.values.map do |result|
-          result['ranking']
+        requests.map do |request|
+          results[request]['ranking']
         end
       else
         # In mock mode: return the entities in the order passed in
