@@ -24,6 +24,6 @@ describe Attune::JsonLogger do
     response.status.should == 200
     response.body.should == "foobar"
 
-    expect(logged).to eq %[{"ref":null,"v":1,"protocol":"http","host":"example.com","path":"/test","t":12345000,"r_id":"eaa45af2-efc3-45ef-90da-9bcb56758e77","status":200,"ua":"Faraday v0.8.8","method":"get","perf":{"total":120.0}}]
+    expect(logged).to match(/{"ref":null,"v":1,"protocol":"http","host":"example.com","path":"\/test","t":12345000,"r_id":"eaa45af2-efc3-45ef-90da-9bcb56758e77","status":200,"ua":"Faraday v\d+.\d+.\d+","method":"get","perf":{"total":120.0}}/)
   end
 end
