@@ -39,6 +39,15 @@ describe Attune::Client do
       }.to raise_exception(Faraday::Error::ConnectionFailed)
       stubs.verify_stubbed_calls
     end
+    it "will raise AuthenticationException" do
+      stubs.post("oauth/token",
+        {:client_id=>"id", :client_secret=>"secret", grant_type: :client_credentials}
+      ){ [200, {}, %[{"error":"invalid_client","error_description":"Bad client credentials"}]] }
+      expect {
+        client.get_auth_token("id", "secret")
+      }.to raise_exception(Attune::AuthenticationException)
+      stubs.verify_stubbed_calls
+    end
   end
 
   describe "disabled" do
@@ -52,6 +61,11 @@ describe Attune::Client do
     end
     context "with mock" do
       let(:options){ {disabled: true, exception_handler: :mock} }
+
+      it "mocks get_auth_token" do
+        result = client.get_auth_token("id", "secret")
+        expect(result).to match(/^[a-z0-9\-]+$/)
+      end
       it "mocks create_anonymous with an id" do
         result = client.create_anonymous(id: '12345', user_agent: 'Mozilla/5.0')
         expect(result).to eq('12345')
@@ -81,6 +95,15 @@ describe Attune::Client do
     end
   end
 
+  it "can get_auth_token requesting a token" do
+    stubs.post("oauth/token",
+      {:client_id=>"id", :client_secret=>"secret", grant_type: :client_credentials}
+    ){ [200, {}, %[{"access_token":"secret-token","token_type":"bearer"}]] }
+    token = client.get_auth_token('id', 'secret')
+
+    expect(token).to eq('secret-token')
+  end
+
   it "can create_anonymous generating an id" do
     stubs.post("anonymous", %[{"user_agent":"Mozilla/5.0"}]){ [200, {location: 'urn:id:abcd123'}, nil] }
     id = client.create_anonymous(user_agent: 'Mozilla/5.0')
@@ -104,7 +127,7 @@ describe Attune::Client do
   end
 
   it "can get_rankings" do
-    stubs.get("rankings/anonymous=abcd123&view=b%2Fmens-pants&entity_collection=products&entities=1001%2C%2C1002%2C%2C1003%2C%2C1004&ip=none"){ [200, {}, %[{"ranking":["1004","1003","1002","1001"]}]] }
+    stubs.get("rankings/anonymous=abcd123&entities=1001%2C%2C1002%2C%2C1003%2C%2C1004&entity_collection=products&ip=none&view=b%2Fmens-pants"){ [200, {}, %[{"ranking":["1004","1003","1002","1001"]}]] }
     rankings = client.get_rankings(
       id: 'abcd123',
       view: 'b/mens-pants',
@@ -119,7 +142,7 @@ describe Attune::Client do
   let(:req1){ CGI::escape 'anonymous=0cddbc0-6114-11e3-949a-0800200c9a66&view=b%2Fmens-pants&entity_collection=products&entities=1001%2C%2C1002%2C%2C1003%2C%2C1004&ip=none' }
   let(:req2){ CGI::escape 'anonymous=0cddbc0-6114-11e3-949a-0800200c9a66&view=b%2Fmens-pants&entity_collection=products&entities=2001%2C%2C2002%2C%2C2003%2C%2C2004&ip=none' }
   it "can multi_get_rankings" do
-    stubs.get("/rankings?ids=anonymous%3D0cddbc0-6114-11e3-949a-0800200c9a66%26view%3Db%252Fmens-pants%26entity_collection%3Dproducts%26entities%3D1001%252C%252C1002%252C%252C1003%252C%252C1004%26ip%3Dnone&ids=anonymous%3D0cddbc0-6114-11e3-949a-0800200c9a66%26view%3Db%252Fmens-pants%26entity_collection%3Dproducts%26entities%3D2001%252C%252C2002%252C%252C2003%252C%252C2004%26ip%3Dnone") do
+    stubs.get("/rankings?ids=anonymous%3D0cddbc0-6114-11e3-949a-0800200c9a66%26entities%3D1001%252C%252C1002%252C%252C1003%252C%252C1004%26entity_collection%3Dproducts%26ip%3Dnone%26view%3Db%252Fmens-pants&ids=anonymous%3D0cddbc0-6114-11e3-949a-0800200c9a66%26entities%3D2001%252C%252C2002%252C%252C2003%252C%252C2004%26entity_collection%3Dproducts%26ip%3Dnone%26view%3Db%252Fmens-pants") do
       [200, {}, <<-JSON]
 {
     "errors": {},

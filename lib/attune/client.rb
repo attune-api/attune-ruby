@@ -7,6 +7,12 @@ module Attune
     end
   end
 
+  class AuthenticationException < Faraday::Error::ClientError
+    def initialize(message="Authentication credentials not accepted")
+      super(message)
+    end
+  end
+
   class Client
     include Attune::Configurable
 
@@ -19,10 +25,41 @@ module Attune
     #   )
     #
     # @param [Hash] options Options for connection (see Attune::Configurable)
-    # @returns A new client object
+    # @return A new client object
     def initialize(options={})
       Attune::Configurable::KEYS.each do |key|
         send("#{key}=", options[key] || Attune::Default.send(key))
+      end
+    end
+
+    # Request an auth token
+    #
+    # @example Generate a new auth token
+    #   token = client.get_auth_token("client id", "secret")
+    # @param [String] client_id The client identifier.
+    # @param [String] client_secret The secret key for the client.
+    # @return An auth token if credentials accepted
+    # @raise [ArgumentError] if client_id or client_secret is not provided
+    # @raise [AuthenticationException] if client_id or client_secret are not accepted
+    # @raise [Faraday::Error::ClientError] if the request fails or exceeds the timeout
+    def get_auth_token(client_id, client_secret)
+      raise ArgumentError, "client_id required" unless client_id
+      raise ArgumentError, "client_secret required" unless client_secret
+
+      response = post_form("oauth/token",
+        client_id: client_id,
+        client_secret: client_secret,
+        grant_type: :client_credentials
+      )
+      if response
+        body = JSON.parse(response.body)
+        if body['error']
+          raise AuthenticationException, body['error_description']
+        end
+        body['access_token']
+      else
+        # Return a new UUID if there was an exception and we're in mock mode
+        SecureRandom.uuid
       end
     end
 
@@ -43,13 +80,14 @@ module Attune
     # @return id [String]
     # @raise [ArgumentError] if user_agent is not provided
     # @raise [Faraday::Error::ClientError] if the request fails or exceeds the timeout
+    # @raise [AuthenticationException] if authorization header not accepted
     def create_anonymous(options)
       raise ArgumentError, "user_agent required" unless options[:user_agent]
       if id = options[:id]
         put("anonymous/#{id}", {user_agent: options[:user_agent]})
         id
       else
-        if response = post("anonymous", {user_agent: options[:user_agent]})
+        if response = post_json("anonymous", {user_agent: options[:user_agent]})
           response[:location][/\Aurn:id:([a-z0-9\-]+)\Z/, 1]
         else
           # Return a new UUID if there was an exception and we're in mock mode
@@ -77,6 +115,7 @@ module Attune
     # @return ranking [Array<String>] The entities in their ranked order
     # @raise [ArgumentError] if required parameters are missing
     # @raise [Faraday::Error::ClientError] if the request fails or exceeds the timeout
+    # @raise [AuthenticationException] if authorization header not accepted
     def get_rankings(options)
       qs = encoded_ranking_params(options)
       if response = get("rankings/#{qs}", customer: options.fetch(:customer, 'none'))
@@ -107,6 +146,7 @@ module Attune
     # @param [Array<Hash>] multi_options An array of options (see #get_rankings)
     # @return [Array<Array<String>>] rankings
     # @raise [Faraday::Error::ClientError] if the request fails or exceeds the timeout
+    # @raise [AuthenticationException] if authorization header not accepted
     def multi_get_rankings(multi_options)
       requests = multi_options.map do |options|
         encoded_ranking_params(options)
@@ -139,6 +179,7 @@ module Attune
     #     'cd171f7c-560d-4a62-8d65-16b87419a58'
     #   )
     # @raise [Faraday::Error::ClientError] if the request fails or exceeds the timeout
+    # @raise [AuthenticationException] if authorization header not accepted
     def bind(id, customer_id)
       put("bindings/anonymous=#{id}&customer=#{customer_id}")
       true
@@ -168,8 +209,18 @@ module Attune
       handle_exception(e)
     end
 
-    def post(path, params={})
-      adapter.post(path, ::JSON.dump(params))
+    def post_form(path, params={})
+      adapter.post(path, params)
+    rescue Faraday::Error::ClientError => e
+      handle_exception(e)
+    end
+
+    def post_json(path, params={})
+      adapter.post do |req|
+        req.url path
+        req.headers['Content-Type'] = 'application/json'
+        req.body = ::JSON.dump(params)
+      end
     rescue Faraday::Error::ClientError => e
       handle_exception(e)
     end
@@ -178,13 +229,19 @@ module Attune
       if exception_handler == :mock
         nil
       else
-        raise e
+        if e.response && e.response[:status] == 401
+          raise AuthenticationException, e
+        else
+          raise e
+        end
       end
     end
 
     def adapter
       raise DisabledException if disabled?
-      Faraday.new(url: endpoint, builder: middleware, request: {timeout: timeout})
+      conn = Faraday.new(url: endpoint, builder: middleware, request: {timeout: timeout})
+      conn.authorization :Bearer, auth_token unless !auth_token
+      conn
     end
   end
 end

@@ -77,12 +77,20 @@ class ProductsController
 end
 ```
 
+The client provides a way to request a new auth_token through the API
+
+``` ruby
+client = Attune::Client.new
+auth_token = client.get_auth_token('my-client-id', 'my-client-secret')
+```
+
 ### Configuration
 
 Attune can be configured globally
 
 ``` ruby
 Attune.configure do |c|
+  c.auth_token = "my-secure-auth-token"
   c.endpoint = "http://example.com/"
   c.timeout  = 5
 end
@@ -91,7 +99,7 @@ end
 Settings can also be overridden on a client object
 
 ``` ruby
-client = Attune::Client.new(timeout: 2)
+client = Attune::Client.new(auth_token: "my-secure-auth-token", timeout: 2)
 ```
 
 See the documentation for
