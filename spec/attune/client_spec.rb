@@ -39,6 +39,15 @@ describe Attune::Client do
       }.to raise_exception(Faraday::Error::ConnectionFailed)
       stubs.verify_stubbed_calls
     end
+    it "will raise AuthenticationException" do
+      stubs.post("oauth/token",
+        {:client_id=>"id", :client_secret=>"secret", grant_type: :client_credentials}
+      ){ [200, {}, %[{"error":"invalid_client","error_description":"Bad client credentials"}]] }
+      expect {
+        client.get_auth_token("id", "secret")
+      }.to raise_exception(Attune::AuthenticationException)
+      stubs.verify_stubbed_calls
+    end
   end
 
   describe "disabled" do
@@ -52,6 +61,11 @@ describe Attune::Client do
     end
     context "with mock" do
       let(:options){ {disabled: true, exception_handler: :mock} }
+
+      it "mocks get_auth_token" do
+        result = client.get_auth_token("id", "secret")
+        expect(result).to match(/^[a-z0-9\-]+$/)
+      end
       it "mocks create_anonymous with an id" do
         result = client.create_anonymous(id: '12345', user_agent: 'Mozilla/5.0')
         expect(result).to eq('12345')
