@@ -81,6 +81,15 @@ describe Attune::Client do
     end
   end
 
+  it "can get_auth_token requesting a token" do
+    stubs.post("oauth/token",
+      {:client_id=>"id", :client_secret=>"secret", grant_type: :client_credentials}
+    ){ [200, {}, %[{"access_token":"secret-token","token_type":"bearer"}]] }
+    token = client.get_auth_token('id', 'secret')
+
+    expect(token).to eq('secret-token')
+  end
+
   it "can create_anonymous generating an id" do
     stubs.post("anonymous", %[{"user_agent":"Mozilla/5.0"}]){ [200, {location: 'urn:id:abcd123'}, nil] }
     id = client.create_anonymous(user_agent: 'Mozilla/5.0')

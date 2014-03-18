@@ -1,12 +1,16 @@
 module Attune
   module Configurable
     KEYS = [
+      :auth_token,
       :endpoint,
       :middleware,
       :disabled,
       :exception_handler,
       :timeout
     ]
+
+    # The Authorization token
+    attr_accessor :auth_token
 
     # The HTTP endpoint to connect to
     attr_accessor :endpoint

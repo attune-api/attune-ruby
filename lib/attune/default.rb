@@ -16,6 +16,8 @@ module Attune
       # Log all requests
       builder.use Attune::CallDropping
 
+      builder.request  :url_encoded
+
       # Allow one retry per request
       builder.request :retry, 1
 

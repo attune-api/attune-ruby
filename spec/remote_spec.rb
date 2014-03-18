@@ -2,8 +2,23 @@ require 'spec_helper'
 
 describe "remote requests" do
   let(:endpoint){ ENV['REMOTE_ENDPOINT'] }
-  before { pending "REMOTE_ENDPOINT required for remote spec" unless endpoint }
-  let!(:client){ Attune::Client.new(endpoint: endpoint) }
+  let(:auth_token){ ENV['AUTH_TOKEN'] }
+
+  let(:client_id) { ENV['CLIENT_ID'] }
+  let(:client_secret) { ENV['CLIENT_SECRET'] }
+
+  before do
+    pending "REMOTE_ENDPOINT required for remote spec" unless endpoint
+    pending "AUTH_TOKEN required for remote spec" unless auth_token
+  end
+  let!(:client){ Attune::Client.new(endpoint: endpoint, auth_token: auth_token) }
+
+  it "can request an auth_token given a client id and secret" do
+    pending "CLIENT_ID required for get_auth_token spec" unless client_id
+    pending "CLIENT_SECRET required for get_auth_token spec" unless client_secret
+    token = client.get_auth_token(client_id, client_secret)
+    token.should =~ /[a-z0-9\-]+/
+  end
 
   it "can create an anonymous user" do
     id = client.create_anonymous(user_agent: 'Mozilla/5.0')

@@ -19,11 +19,37 @@ module Attune
     #   )
     #
     # @param [Hash] options Options for connection (see Attune::Configurable)
-    # @returns A new client object
+    # @return A new client object
     def initialize(options={})
       Attune::Configurable::KEYS.each do |key|
         send("#{key}=", options[key] || Attune::Default.send(key))
       end
+    end
+
+    # Request an auth token
+    #
+    # @example Generate a new auth token
+    #   token = client.get_auth_token("client id", "secret")
+    # @param [String] client_id The client identifier.
+    # @param [String] client_secret The secret key for the client.
+    # @return An auth token if credentials accepted
+    # @raise [ArgumentError] if client_id or client_secret is not provided
+    # @raise [ArgumentError] if client_id or client_secret is not valid
+    # @raise [Faraday::Error::ClientError] if the request fails or exceeds the timeout
+    def get_auth_token(client_id, client_secret)
+      raise ArgumentError, "client_id required" unless client_id
+      raise ArgumentError, "client_secret required" unless client_secret
+
+      response = post_form("oauth/token",
+        client_id: client_id,
+        client_secret: client_secret,
+        grant_type: :client_credentials
+      )
+      response = JSON.parse(response.body)
+      if response['error']
+        raise ArgumentError, response['error_description']
+      end
+      response['access_token']
     end
 
     # Create an anonymous tracked user
@@ -49,7 +75,7 @@ module Attune
         put("anonymous/#{id}", {user_agent: options[:user_agent]})
         id
       else
-        if response = post("anonymous", {user_agent: options[:user_agent]})
+        if response = post_json("anonymous", {user_agent: options[:user_agent]})
           response[:location][/\Aurn:id:([a-z0-9\-]+)\Z/, 1]
         else
           # Return a new UUID if there was an exception and we're in mock mode
@@ -168,8 +194,18 @@ module Attune
       handle_exception(e)
     end
 
-    def post(path, params={})
-      adapter.post(path, ::JSON.dump(params))
+    def post_form(path, params={})
+      adapter.post(path, params)
+    rescue Faraday::Error::ClientError => e
+      handle_exception(e)
+    end
+
+    def post_json(path, params={})
+      adapter.post do |req|
+        req.url path
+        req.headers['Content-Type'] = 'application/json'
+        req.body = ::JSON.dump(params)
+      end
     rescue Faraday::Error::ClientError => e
       handle_exception(e)
     end
@@ -184,7 +220,9 @@ module Attune
 
     def adapter
       raise DisabledException if disabled?
-      Faraday.new(url: endpoint, builder: middleware, request: {timeout: timeout})
+      conn = Faraday.new(url: endpoint, builder: middleware, request: {timeout: timeout})
+      conn.authorization :Bearer, auth_token unless !auth_token
+      conn
     end
   end
 end
