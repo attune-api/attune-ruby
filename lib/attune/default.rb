@@ -1,4 +1,3 @@
-require 'attune/param_flattener'
 require "attune/call_dropping"
 require "attune/json_logger"
 
@@ -9,10 +8,7 @@ module Attune
 
     ENDPOINT = "http://localhost/".freeze
 
-    MIDDLEWARE = Faraday::Builder.new do |builder|
-      # Needed for encoding of BATCH GET requests
-      builder.use Attune::ParamFlattener
-
+    MIDDLEWARE = Faraday::RackBuilder.new do |builder|
       # Log all requests
       builder.use Attune::CallDropping
 

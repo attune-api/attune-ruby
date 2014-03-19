@@ -239,9 +239,14 @@ module Attune
 
     def adapter
       raise DisabledException if disabled?
-      conn = Faraday.new(url: endpoint, builder: middleware, request: {timeout: timeout})
-      conn.authorization :Bearer, auth_token unless !auth_token
-      conn
+      Faraday.new(url: endpoint, builder: middleware) do |connection|
+        connection.options.timeout = timeout
+
+        # Needed for encoding of BATCH GET requests
+        connection.options.params_encoder = Faraday::FlatParamsEncoder
+
+        connection.authorization :Bearer, auth_token unless !auth_token
+      end
     end
   end
 end
