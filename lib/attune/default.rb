@@ -1,5 +1,6 @@
 require "attune/call_dropping"
 require "attune/json_logger"
+require "attune/net_http_persistent"
 
 module Attune
   # Default options
@@ -7,6 +8,9 @@ module Attune
     extend Configurable
 
     ENDPOINT = "http://localhost/".freeze
+
+    # user our version of NetHttpPersistent adapter
+    Faraday::Adapter.register_middleware(attune_http_persistent: NetHttpPersistent)
 
     MIDDLEWARE = Faraday::RackBuilder.new do |builder|
       # Log all requests
@@ -22,7 +26,8 @@ module Attune
 
       # Raise exceptions for HTTP 4xx/5xx
       builder.response :raise_error
-      builder.adapter Faraday.default_adapter
+
+      builder.adapter :attune_http_persistent
     end
 
     configure do |c|
