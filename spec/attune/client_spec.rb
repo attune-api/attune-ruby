@@ -80,7 +80,11 @@ describe Attune::Client do
           collection: 'products',
           entities: %w[1001, 1002, 1003, 1004]
         )
-        expect(result).to eq %w[1001, 1002, 1003, 1004]
+        expected = {
+          headers: {"attune-cell"=>"mock", "attune-ranking"=>"mock"},
+          entities: %w[1001, 1002, 1003, 1004]
+        }
+        expect(result).to eq expected
       end
       it "mocks multi_get_rankings" do
         result = client.multi_get_rankings([
@@ -89,7 +93,11 @@ describe Attune::Client do
           collection: 'products',
           entities: %w[1001, 1002, 1003, 1004]
         ])
-        expect(result).to eq [%w[1001, 1002, 1003, 1004]]
+        expected = {
+          headers: {"attune-cell"=>"mock", "attune-ranking"=>"mock"},
+          entities: [%w[1001, 1002, 1003, 1004]]
+        }
+        expect(result).to eq expected
       end
     end
   end
@@ -125,66 +133,83 @@ describe Attune::Client do
     expect(id).to eq('abcd123')
   end
 
-  it "can get_rankings" do
-    stubs.get("rankings/anonymous=abcd123&entities=1001%2C%2C1002%2C%2C1003%2C%2C1004&entity_collection=products&ip=none&view=b%2Fmens-pants"){ [200, {}, %[{"ranking":["1004","1003","1002","1001"]}]] }
-    rankings = client.get_rankings(
-      id: 'abcd123',
-      view: 'b/mens-pants',
-      collection: 'products',
-      entities: %w[1001, 1002, 1003, 1004]
-    )
-    stubs.verify_stubbed_calls
-
-    expect(rankings).to eq(%W[1004 1003 1002 1001])
-  end
-
-  let(:req1){ CGI::escape 'anonymous=0cddbc0-6114-11e3-949a-0800200c9a66&view=b%2Fmens-pants&entity_collection=products&entities=1001%2C%2C1002%2C%2C1003%2C%2C1004&ip=none' }
-  let(:req2){ CGI::escape 'anonymous=0cddbc0-6114-11e3-949a-0800200c9a66&view=b%2Fmens-pants&entity_collection=products&entities=2001%2C%2C2002%2C%2C2003%2C%2C2004&ip=none' }
-  it "can multi_get_rankings" do
-    stubs.get("/rankings?ids=anonymous%3D0cddbc0-6114-11e3-949a-0800200c9a66%26entities%3D1001%252C%252C1002%252C%252C1003%252C%252C1004%26entity_collection%3Dproducts%26ip%3Dnone%26view%3Db%252Fmens-pants&ids=anonymous%3D0cddbc0-6114-11e3-949a-0800200c9a66%26entities%3D2001%252C%252C2002%252C%252C2003%252C%252C2004%26entity_collection%3Dproducts%26ip%3Dnone%26view%3Db%252Fmens-pants") do
-      [200, {}, <<-JSON]
-{
-    "errors": {},
-    "results": {
-        "anonymous=0cddbc0-6114-11e3-949a-0800200c9a66&entities=1001%2C%2C1002%2C%2C1003%2C%2C1004&entity_collection=products&ip=none&view=b%2Fmens-pants": {
-            "ranking": [
-                "1004",
-                "1003",
-                "1002",
-                "1001"
-            ]
-        },
-        "anonymous=0cddbc0-6114-11e3-949a-0800200c9a66&entities=2001%2C%2C2002%2C%2C2003%2C%2C2004&entity_collection=products&ip=none&view=b%2Fmens-pants": {
-            "ranking": [
-                "2004",
-                "2003",
-                "2002",
-                "2001"
-            ]
-        }
-    }
-}
-      JSON
-    end
-    rankings = client.multi_get_rankings([
-      {
-        id: '0cddbc0-6114-11e3-949a-0800200c9a66',
+  describe "get_rankings" do
+    before(:each) do
+      stubs.get("rankings/anonymous=abcd123&entities=1001%2C%2C1002%2C%2C1003%2C%2C1004&entity_collection=products&ip=none&view=b%2Fmens-pants"){ [200, {"attune-ranking"=>"test", "attune-cell"=>"test"}, %[{"ranking":["1004","1003","1002","1001"]}]] }
+      @rankings = client.get_rankings(
+        id: 'abcd123',
         view: 'b/mens-pants',
         collection: 'products',
         entities: %w[1001, 1002, 1003, 1004]
-      },
-      {
-        id: '0cddbc0-6114-11e3-949a-0800200c9a66',
-        view: 'b/mens-pants',
-        collection: 'products',
-        entities: %w[2001, 2002, 2003, 2004]
-      }
-    ])
-    stubs.verify_stubbed_calls
+      )
+      stubs.verify_stubbed_calls
+    end
 
-    expect(rankings).to eq [
-      %W[1004 1003 1002 1001],
-      %W[2004 2003 2002 2001]
-    ]
+    it "can get ranked entities" do
+      expect(@rankings[:entities]).to eq(%W[1004 1003 1002 1001])
+    end
+
+    it "can get ranking headers" do
+      expect(@rankings[:headers]).to eq({"attune-ranking"=>"test", "attune-cell"=>"test"})
+    end
+  end
+
+  describe "multi_get_rankings" do
+    let(:req1){ CGI::escape 'anonymous=0cddbc0-6114-11e3-949a-0800200c9a66&view=b%2Fmens-pants&entity_collection=products&entities=1001%2C%2C1002%2C%2C1003%2C%2C1004&ip=none' }
+    let(:req2){ CGI::escape 'anonymous=0cddbc0-6114-11e3-949a-0800200c9a66&view=b%2Fmens-pants&entity_collection=products&entities=2001%2C%2C2002%2C%2C2003%2C%2C2004&ip=none' }
+
+    before(:each) do
+      stubs.get("/rankings?ids=anonymous%3D0cddbc0-6114-11e3-949a-0800200c9a66%26entities%3D1001%252C%252C1002%252C%252C1003%252C%252C1004%26entity_collection%3Dproducts%26ip%3Dnone%26view%3Db%252Fmens-pants&ids=anonymous%3D0cddbc0-6114-11e3-949a-0800200c9a66%26entities%3D2001%252C%252C2002%252C%252C2003%252C%252C2004%26entity_collection%3Dproducts%26ip%3Dnone%26view%3Db%252Fmens-pants") do
+        [200, {"attune-ranking"=>"test", "attune-cell"=>"test"}, <<-JSON]
+  {
+      "errors": {},
+      "results": {
+          "anonymous=0cddbc0-6114-11e3-949a-0800200c9a66&entities=1001%2C%2C1002%2C%2C1003%2C%2C1004&entity_collection=products&ip=none&view=b%2Fmens-pants": {
+              "ranking": [
+                  "1004",
+                  "1003",
+                  "1002",
+                  "1001"
+              ]
+          },
+          "anonymous=0cddbc0-6114-11e3-949a-0800200c9a66&entities=2001%2C%2C2002%2C%2C2003%2C%2C2004&entity_collection=products&ip=none&view=b%2Fmens-pants": {
+              "ranking": [
+                  "2004",
+                  "2003",
+                  "2002",
+                  "2001"
+              ]
+          }
+      }
+  }
+        JSON
+      end
+      @rankings = client.multi_get_rankings([
+        {
+          id: '0cddbc0-6114-11e3-949a-0800200c9a66',
+          view: 'b/mens-pants',
+          collection: 'products',
+          entities: %w[1001, 1002, 1003, 1004]
+        },
+        {
+          id: '0cddbc0-6114-11e3-949a-0800200c9a66',
+          view: 'b/mens-pants',
+          collection: 'products',
+          entities: %w[2001, 2002, 2003, 2004]
+        }
+      ])
+      stubs.verify_stubbed_calls
+    end
+
+    it "can get ranked entities" do
+      expect(@rankings[:entities]).to eq [
+        %W[1004 1003 1002 1001],
+        %W[2004 2003 2002 2001]
+      ]
+    end
+
+    it "can get ranking headers" do
+      expect(@rankings[:headers]).to eq({"attune-ranking"=>"test", "attune-cell"=>"test"})
+    end
   end
 end

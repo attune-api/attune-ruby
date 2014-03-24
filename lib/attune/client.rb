@@ -112,18 +112,24 @@ module Attune
     # @option options [Array<String>] :entities entities to be ranked. These should be numeric strings or integers.
     # @option options [String] :ip ip address of remote user. Used for geolocation (optional)
     # @option options [String] :customer id of customer (optional)
-    # @return ranking [Array<String>] The entities in their ranked order
+    # @return [Hash{Symbol => Hash, Array<String>}]
+    #   * :headers the attune headers indicating ranking performed
+    #   * :entities entities in their ranked order
     # @raise [ArgumentError] if required parameters are missing
     # @raise [Faraday::Error::ClientError] if the request fails or exceeds the timeout
     # @raise [AuthenticationException] if authorization header not accepted
     def get_rankings(options)
       qs = encoded_ranking_params(options)
+      rankings = {}
       if response = get("rankings/#{qs}", customer: options.fetch(:customer, 'none'))
-        JSON.parse(response.body)['ranking']
+        rankings[:headers] = response.headers.select { |k,v| k =~ /^attune/ }
+        rankings[:entities] = JSON.parse(response.body)['ranking']
       else
         # In mock mode: return the entities in the order passed in
-        options[:entities]
+        rankings[:headers] = {"attune-cell"=>"mock", "attune-ranking"=>"mock"}
+        rankings[:entities] = options[:entities]
       end
+      rankings
     end
 
     # Get multiple rankings in one call
@@ -144,29 +150,35 @@ module Attune
     #     }
     #   ])
     # @param [Array<Hash>] multi_options An array of options (see #get_rankings)
-    # @return [Array<Array<String>>] rankings
+    # @return [Hash{Symbol => Hash, Array<Array<String>>}]
+    #   * :headers the attune headers indicating ranking performed
+    #   * :entities entities in their ranked order
     # @raise [Faraday::Error::ClientError] if the request fails or exceeds the timeout
     # @raise [AuthenticationException] if authorization header not accepted
     def multi_get_rankings(multi_options)
       requests = multi_options.map do |options|
         encoded_ranking_params(options)
       end
+      rankings = {}
       if response = get("rankings", ids: requests)
         results = JSON.parse(response.body)['results']
+        rankings[:headers] = response.headers.select { |k,v| k =~ /^attune/ }
 
         # Order of encoded paramaters may change, so we must parse them
         results = Hash[results.map do |request, result|
           [CGI.parse(request), result]
         end]
-        requests.map do |request|
+        rankings[:entities] = requests.map do |request|
           results[CGI.parse(request)]['ranking']
         end
       else
         # In mock mode: return the entities in the order passed in
-        multi_options.map do |options|
+        rankings[:headers] = {"attune-cell"=>"mock", "attune-ranking"=>"mock"}
+        rankings[:entities] = multi_options.map do |options|
           options[:entities]
         end
       end
+      rankings
     end
 
     # Binds an anonymous user to a customer id

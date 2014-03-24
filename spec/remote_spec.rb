@@ -35,24 +35,35 @@ describe "remote requests" do
     client.bind(id, '654321')
   end
 
+  let(:entities){ [202875,202876,202874,202900,202902,202898,202905,200182,200181,185940,188447,185932,190589,1238689589] }
   describe "get_rankings" do
-    let(:entities){ [202875,202876,202874,202900,202902,202898,202905,200182,200181,185940,188447,185932,190589,1238689589] }
-    it "can get rankings" do
+    before(:each) do
       id = client.create_anonymous(id: '123456', user_agent: 'Mozilla/5.0')
       client.bind(id, '654321')
-      result = client.get_rankings(id: '123456', view: 'b/mens-pants', collection: 'products', entities: entities)
-      result.should be_an Array
-      result.sort.should == entities.map(&:to_s).sort
+      @result = client.get_rankings(id: '123456', view: 'b/mens-pants', collection: 'products', entities: entities)
     end
+    it "can get ranked entities" do
+      @result[:entities].should be_an Array
+      @result[:entities].sort.should == entities.map(&:to_s).sort
+    end
+    specify { expect(@result[:headers]).to be_a Hash }
+    specify { expect(@result[:headers]).to have_key "attune-ranking" }
+    specify { expect(@result[:headers]).to have_key "attune-cell" }
+  end
 
+  describe "multi_get_rankings" do
+    before(:each) do
+      id = client.create_anonymous(id: '123456', user_agent: 'Mozilla/5.0')
+      client.bind(id, '654321')
+      @results = client.multi_get_rankings([id: '123456', view: 'b/mens-pants', collection: 'products', entities: entities])
+    end
     it "can batch get rankings" do
-      id = client.create_anonymous(id: '123456', user_agent: 'Mozilla/5.0')
-      client.bind(id, '654321')
-      results = client.multi_get_rankings([id: '123456', view: 'b/mens-pants', collection: 'products', entities: entities])
-      results.should be_an Array
-
-      result, = *results
+      @results[:entities].should be_an Array
+      result, = *@results[:entities]
       result.sort.should == entities.map(&:to_s).sort
     end
+    specify { expect(@results[:headers]).to be_a Hash }
+    specify { expect(@results[:headers]).to have_key "attune-ranking" }
+    specify { expect(@results[:headers]).to have_key "attune-cell" }
   end
 end

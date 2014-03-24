@@ -71,7 +71,7 @@ class ProductsController
       entities: products.map(&:id)
     )
     products.sort_by do |product|
-      ranking.index(product.id.to_s)
+      ranking[:entities].index(product.id.to_s)
     end
   end
 end
