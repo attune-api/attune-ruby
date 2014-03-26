@@ -127,7 +127,7 @@ module Attune
       else
         # In mock mode: return the entities in the order passed in
         rankings[:headers] = {"attune-cell"=>"mock", "attune-ranking"=>"mock"}
-        rankings[:entities] = options[:entities]
+        rankings[:entities] = options[:entities].map(&:to_s)
       end
       rankings
     end
@@ -175,7 +175,7 @@ module Attune
         # In mock mode: return the entities in the order passed in
         rankings[:headers] = {"attune-cell"=>"mock", "attune-ranking"=>"mock"}
         rankings[:entities] = multi_options.map do |options|
-          options[:entities]
+          options[:entities].map(&:to_s)
         end
       end
       rankings

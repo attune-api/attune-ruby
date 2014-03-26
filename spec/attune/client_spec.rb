@@ -73,31 +73,69 @@ describe Attune::Client do
         result = client.create_anonymous(user_agent: 'Mozilla/5.0')
         expect(result).to match(/^[a-z0-9\-]+$/)
       end
-      it "mocks get_rankings" do
-        result = client.get_rankings(
-          id: 'abcd123',
-          view: 'b/mens-pants',
-          collection: 'products',
-          entities: %w[1001, 1002, 1003, 1004]
-        )
-        expected = {
-          headers: {"attune-cell"=>"mock", "attune-ranking"=>"mock"},
-          entities: %w[1001, 1002, 1003, 1004]
-        }
-        expect(result).to eq expected
+      describe "mocks get_rankings" do
+        let(:entities) { %w[1001 1002 1003 1004] }
+        let(:expected) do
+          {
+            headers: {"attune-cell"=>"mock", "attune-ranking"=>"mock"},
+            entities: entities.map { |e| e.to_s }
+          }
+        end
+
+        before(:each) do
+          @result = client.get_rankings(
+            id: 'abcd123',
+            view: 'b/mens-pants',
+            collection: 'products',
+            entities: entities
+          )
+        end
+
+        context "with entities sent as strings" do
+          it "returns entities in order sent" do
+            expect(@result).to eq expected
+          end
+        end
+
+        context "with entities sent as integers" do
+          let(:entities) { [1001, 1002, 1003, 1004] }
+
+          it "returns entities in order sent as strings" do
+            expect(@result).to eq expected
+          end
+        end
       end
-      it "mocks multi_get_rankings" do
-        result = client.multi_get_rankings([
-          id: 'abcd123',
-          view: 'b/mens-pants',
-          collection: 'products',
-          entities: %w[1001, 1002, 1003, 1004]
-        ])
-        expected = {
-          headers: {"attune-cell"=>"mock", "attune-ranking"=>"mock"},
-          entities: [%w[1001, 1002, 1003, 1004]]
-        }
-        expect(result).to eq expected
+      describe "mocks multi_get_rankings" do
+        let(:entities) { %w[1001 1002 1003 1004] }
+        let(:expected) do
+          {
+            headers: {"attune-cell"=>"mock", "attune-ranking"=>"mock"},
+            entities: [ entities.map { |e| e.to_s } ]
+          }
+        end
+
+        before(:each) do
+          @result = client.multi_get_rankings([
+            id: 'abcd123',
+            view: 'b/mens-pants',
+            collection: 'products',
+            entities: entities
+          ])
+        end
+
+        context "with entities sent as strings" do
+          it "returns entities in order sent" do
+            expect(@result).to eq expected
+          end
+        end
+
+        context "with entities sent as integers" do
+          let(:entities) { [1001, 1002, 1003, 1004] }
+
+          it "returns entities in order sent as strings" do
+            expect(@result).to eq expected
+          end
+        end
       end
     end
   end
