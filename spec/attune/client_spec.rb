@@ -38,6 +38,12 @@ describe Attune::Client do
       }.to raise_exception(Faraday::Error::ConnectionFailed)
       stubs.verify_stubbed_calls
     end
+    it "will raise ConnectionFailed on Errno::ENOENT" do
+      stubs.post("anonymous", %[{"user_agent":"Mozilla/5.0"}]){ raise Errno::ENOENT.new("test") }
+      expect {
+        client.create_anonymous(user_agent: 'Mozilla/5.0')
+      }.to raise_exception(Faraday::Error::ConnectionFailed)
+    end
     it "will raise AuthenticationException" do
       stubs.post("oauth/token",
         {:client_id=>"id", :client_secret=>"secret", grant_type: :client_credentials}

@@ -211,19 +211,19 @@ module Attune
 
     def get(path, params={})
       adapter.get(path, params)
-    rescue Faraday::Error::ClientError => e
+    rescue Errno::ENOENT, Faraday::Error::ClientError => e
       handle_exception(e)
     end
 
     def put(path, params={})
       adapter.put(path, ::JSON.dump(params))
-    rescue Faraday::Error::ClientError => e
+    rescue Errno::ENOENT, Faraday::Error::ClientError => e
       handle_exception(e)
     end
 
     def post_form(path, params={})
       adapter.post(path, params)
-    rescue Faraday::Error::ClientError => e
+    rescue Errno::ENOENT, Faraday::Error::ClientError => e
       handle_exception(e)
     end
 
@@ -233,7 +233,7 @@ module Attune
         req.headers['Content-Type'] = 'application/json'
         req.body = ::JSON.dump(params)
       end
-    rescue Faraday::Error::ClientError => e
+    rescue Errno::ENOENT, Faraday::Error::ClientError => e
       handle_exception(e)
     end
 
@@ -241,7 +241,9 @@ module Attune
       if exception_handler == :mock
         nil
       else
-        if e.response && e.response[:status] == 401
+        if e.is_a? Errno::ENOENT
+          raise Faraday::Error::ConnectionFailed, e
+        elsif e.response && e.response[:status] == 401
           raise AuthenticationException, e
         else
           raise e
