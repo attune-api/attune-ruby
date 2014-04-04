@@ -201,10 +201,10 @@ module Attune
     def encoded_ranking_params(options)
       params = {
         anonymous: options.fetch(:id),
-        view: options.fetch(:view),
-        entity_collection: options.fetch(:collection),
         entities: options.fetch(:entities).join(','),
-        ip: options.fetch(:ip, 'none')
+        entity_collection: options.fetch(:collection),
+        ip: options.fetch(:ip, 'none'),
+        view: options.fetch(:view)
       }
       Faraday::Utils::ParamsHash[params].to_query
     end
