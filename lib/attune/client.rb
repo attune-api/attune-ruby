@@ -201,10 +201,10 @@ module Attune
     def encoded_ranking_params(options)
       params = {
         anonymous: options.fetch(:id),
-        view: options.fetch(:view),
-        entity_collection: options.fetch(:collection),
         entities: options.fetch(:entities).join(','),
-        ip: options.fetch(:ip, 'none')
+        entity_collection: options.fetch(:collection),
+        ip: options.fetch(:ip, 'none'),
+        view: options.fetch(:view)
       }
       Faraday::Utils::ParamsHash[params].to_query
     end
@@ -253,12 +253,7 @@ module Attune
 
     def adapter
       raise DisabledException if disabled?
-      Faraday.new(url: endpoint, builder: middleware) do |connection|
-        connection.options.timeout = timeout
-
-        # Needed for encoding of BATCH GET requests
-        connection.options.params_encoder = Faraday::FlatParamsEncoder
-
+      Faraday.new(url: endpoint, builder: middleware, request: {timeout: timeout}) do |connection|
         connection.authorization :Bearer, auth_token unless !auth_token
       end
     end

@@ -1,3 +1,4 @@
+require 'attune/param_flattener'
 require "attune/call_dropping"
 require "attune/json_logger"
 require "attune/net_http_persistent"
@@ -12,7 +13,10 @@ module Attune
     # user our version of NetHttpPersistent adapter
     Faraday::Adapter.register_middleware(attune_http_persistent: NetHttpPersistent)
 
-    MIDDLEWARE = Faraday::RackBuilder.new do |builder|
+    MIDDLEWARE = Faraday::Builder.new do |builder|
+      # Needed for encoding of BATCH GET requests
+      builder.use Attune::ParamFlattener
+
       # Log all requests
       builder.use Attune::CallDropping
 

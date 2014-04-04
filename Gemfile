@@ -6,3 +6,5 @@ gem 'guard-rspec'
 gem 'pry'
 gem 'pry-rescue'
 gem 'pry-stack_explorer'
+
+gem "faraday", "~> 0.8.9"
