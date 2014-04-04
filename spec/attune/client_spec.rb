@@ -18,7 +18,8 @@ describe Attune::Client do
   let(:options){ {endpoint: 'http://example.com:8080/', middleware: middleware} }
   let(:stubs) { Faraday::Adapter::Test::Stubs.new }
   let(:middleware) do
-    Faraday::RackBuilder.new do |builder|
+    Faraday::Builder.new do |builder|
+      builder.use Attune::ParamFlattener
       builder.adapter :test, stubs
     end
   end
