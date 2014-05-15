@@ -2,9 +2,9 @@
 
 A client for the [Attune ranking API](http://attune.co/). Built using the excellent [faraday](https://github.com/lostisland/faraday) library.
 
-* [Github](https://github.com/DigitalStripe/attune-ruby)
+* [Github](https://github.com/attune-api/attune-ruby)
 * [RubyGems](https://rubygems.org/gems/attune)
-* [Documentation](http://rdoc.info/github/DigitalStripe/attune-ruby)
+* [Documentation](http://rdoc.info/github/attune-api/attune-ruby)
 
 ## Installation
 
@@ -103,9 +103,9 @@ client = Attune::Client.new(auth_token: "my-secure-auth-token", timeout: 2)
 ```
 
 See the documentation for
-[Attune::Configurable](http://rdoc.info/github/DigitalStripe/attune-ruby/master/Attune/Configurable)
+[Attune::Configurable](http://rdoc.info/github/attune-api/attune-ruby/master/Attune/Configurable)
 and the
-[default configuration](http://rdoc.info/github/DigitalStripe/attune-ruby/master/Attune/Default)
+[default configuration](http://rdoc.info/github/attune-api/attune-ruby/master/Attune/Default)
 for more details.
 
 ### Testing
@@ -121,7 +121,7 @@ Calling `.test_mode!` is equivalent to setting `disabled` to true and `exception
 
 ## Contributing
 
-1. Fork it ( http://github.com/DigitalStripe/attune/fork )
+1. Fork it ( http://github.com/attune-api/attune-ruby/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)

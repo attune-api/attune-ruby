@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["john@freerunningtechnologies.com"]
   spec.summary       = %q{Client for the Attune product ranking API.}
   spec.description   = %q{Client for the Attune product ranking API.}
-  spec.homepage      = "https://github.com/DigitalStripe/attune-ruby"
+  spec.homepage      = "https://github.com/attune-api/attune-ruby"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
