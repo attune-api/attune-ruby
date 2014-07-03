@@ -4,6 +4,19 @@ require "attune/version"
 require "attune/configurable"
 require "attune/default"
 require "attune/client"
+require "attune/api/entities"
+require "attune/api/anonymous"
+require "attune/models/blacklistgetresponse"
+require "attune/models/anonymousresult"
+require "attune/models/blacklistparams"
+require "attune/models/rankedentities"
+require "attune/models/rankingparams"
+require "attune/models/customer"
+require "attune/models/blacklist"
+require "attune/models/batchrankingrequest"
+require "attune/models/scopeentry"
+require "attune/models/blacklistsaveresponse"
+require "attune/models/batchrankingresult"
 
 module Attune
   def self.client
@@ -23,3 +36,4 @@ module Attune
     Default.configure(&block)
   end
 end
+
