@@ -26,23 +26,23 @@ describe Attune::Client do
 
   describe "API errors" do
     it "will raise timeout" do
-      stubs.post("anonymous", %[{"user_agent":"Mozilla/5.0"}]){ raise Faraday::Error::TimeoutError.new("test") }
+      stubs.post("anonymous", nil){ raise Faraday::Error::TimeoutError.new("test") }
       expect {
-        client.create_anonymous(user_agent: 'Mozilla/5.0')
+        client.anonymous.create
       }.to raise_exception(Faraday::Error::TimeoutError)
       stubs.verify_stubbed_calls
     end
     it "will raise ConnectionFailed" do
-      stubs.post("anonymous", %[{"user_agent":"Mozilla/5.0"}]){ raise Faraday::Error::ConnectionFailed.new("test") }
+      stubs.post("anonymous", nil){ raise Faraday::Error::ConnectionFailed.new("test") }
       expect {
-        client.create_anonymous(user_agent: 'Mozilla/5.0')
+        client.anonymous.create
       }.to raise_exception(Faraday::Error::ConnectionFailed)
       stubs.verify_stubbed_calls
     end
     it "will raise ConnectionFailed on Errno::ENOENT" do
-      stubs.post("anonymous", %[{"user_agent":"Mozilla/5.0"}]){ raise Errno::ENOENT.new("test") }
+      stubs.post("anonymous", nil){ raise Errno::ENOENT.new("test") }
       expect {
-        client.create_anonymous(user_agent: 'Mozilla/5.0')
+        client.anonymous.create
       }.to raise_exception(Faraday::Error::ConnectionFailed)
     end
     it "will raise AuthenticationException" do
@@ -61,7 +61,7 @@ describe Attune::Client do
       let(:options){ {disabled: true, exception_handler: :raise} }
       it "will raise DisalbedException" do
         expect {
-          client.create_anonymous(user_agent: 'Mozilla/5.0')
+          client.anonymous.create
         }.to raise_exception(Attune::DisabledException)
       end
     end
@@ -72,35 +72,28 @@ describe Attune::Client do
         result = client.get_auth_token("id", "secret")
         expect(result).to match(/^[a-z0-9\-]+$/)
       end
-      it "mocks create_anonymous with an id" do
-        result = client.create_anonymous(id: '12345', user_agent: 'Mozilla/5.0')
-        expect(result).to eq('12345')
-      end
+
       it "mocks create_anonymous with no id" do
-        result = client.create_anonymous(user_agent: 'Mozilla/5.0')
-        expect(result).to match(/^[a-z0-9\-]+$/)
+        result = client.anonymous.create
+        expect(result.id).to match(/^[a-z0-9\-]+$/)
       end
       describe "mocks get_rankings" do
         let(:entities) { %w[1001 1002 1003 1004] }
-        let(:expected) do
-          {
-            headers: {"attune-cell"=>"mock", "attune-ranking"=>"mock"},
-            entities: entities.map { |e| e.to_s }
-          }
-        end
+        let(:expected) { entities.map { |e| e.to_s } }
 
         before(:each) do
-          @result = client.get_rankings(
-            id: 'abcd123',
+          params = Attune::Model::RankingParams.new(
+            anonymous: 'abcd123',
             view: 'b/mens-pants',
-            collection: 'products',
-            entities: entities
+            entity_type: 'products',
+            ids: entities
           )
+          @result = client.entities.get_rankings(params)
         end
 
         context "with entities sent as strings" do
           it "returns entities in order sent" do
-            expect(@result).to eq expected
+            expect(@result.ranking).to eq expected
           end
         end
 
@@ -108,31 +101,30 @@ describe Attune::Client do
           let(:entities) { [1001, 1002, 1003, 1004] }
 
           it "returns entities in order sent as strings" do
-            expect(@result).to eq expected
+            expect(@result.ranking).to eq expected
           end
         end
       end
       describe "mocks multi_get_rankings" do
         let(:entities) { %w[1001 1002 1003 1004] }
-        let(:expected) do
-          {
-            headers: {"attune-cell"=>"mock", "attune-ranking"=>"mock"},
-            entities: [ entities.map { |e| e.to_s } ]
-          }
-        end
+        let(:expected) { [entities.map { |e| e.to_s }] }
 
         before(:each) do
-          @result = client.multi_get_rankings([
-            id: 'abcd123',
+          params = Attune::Model::RankingParams.new(
+            anonymous: 'abcd123',
             view: 'b/mens-pants',
-            collection: 'products',
-            entities: entities
-          ])
+            entity_type: 'products',
+            ids: entities
+          )
+          batch_request = Attune::Model::BatchRankingRequest.new
+          batch_request.requests = [params]
+          @result = client.entities.batch_get_rankings(batch_request)
         end
 
         context "with entities sent as strings" do
           it "returns entities in order sent" do
-            expect(@result).to eq expected
+            rankings = @result.results.map(&:ranking)
+            expect(rankings).to eq expected
           end
         end
 
@@ -140,7 +132,8 @@ describe Attune::Client do
           let(:entities) { [1001, 1002, 1003, 1004] }
 
           it "returns entities in order sent as strings" do
-            expect(@result).to eq expected
+            rankings = @result.results.map(&:ranking)
+            expect(rankings).to eq expected
           end
         end
       end
@@ -157,59 +150,66 @@ describe Attune::Client do
   end
 
   it "can create_anonymous generating an id" do
-    stubs.post("anonymous", %[{"user_agent":"Mozilla/5.0"}]){ [200, {location: 'urn:id:abcd123'}, nil] }
-    id = client.create_anonymous(user_agent: 'Mozilla/5.0')
+    stubs.post("anonymous", nil){ [200, {location: 'urn:id:abcd123'}, %[{"id": "abcd123"}]] }
+    result = client.anonymous.create
     stubs.verify_stubbed_calls
 
-    expect(id).to eq('abcd123')
+    expect(result.id).to eq('abcd123')
   end
 
   it "can bind" do
-    stubs.put("bindings/anonymous=abcd123&customer=foobar"){ [200, {}, nil] }
-    client.bind('abcd123', 'foobar')
+    stubs.put("anonymous/abcd123", %[{"customer":"foobar"}]){ [200, {}, nil] }
+    client.anonymous.update('abcd123', Attune::Model::Customer.new(customer:'foobar'))
     stubs.verify_stubbed_calls
   end
 
-  it "can create_anonymous using existing id" do
-    stubs.put("anonymous/abcd123", %[{"user_agent":"Mozilla/5.0"}]){ [200, {}, nil] }
-    id = client.create_anonymous(id: 'abcd123', user_agent: 'Mozilla/5.0')
+  it "get anonymous using existing id" do
+    stubs.get("anonymous/abcd123"){ [200, {}, %[{"customer":"foobar"}]] }
+    response = client.anonymous.get('abcd123')
     stubs.verify_stubbed_calls
 
-    expect(id).to eq('abcd123')
+    expect(response.customer).to eq('foobar')
   end
 
   describe "get_rankings" do
     before(:each) do
-      stubs.get("rankings/anonymous=abcd123&entities=1001%2C%2C1002%2C%2C1003%2C%2C1004&entity_collection=products&ip=none&view=b%2Fmens-pants"){ [200, {"attune-ranking"=>"test", "attune-cell"=>"test"}, %[{"ranking":["1004","1003","1002","1001"]}]] }
-      @rankings = client.get_rankings(
-        id: 'abcd123',
+      ranking_request = {
+        anonymous: 'abcd123',
         view: 'b/mens-pants',
-        collection: 'products',
-        entities: %w[1001, 1002, 1003, 1004]
-      )
+        entity_type: 'products',
+        ids: %w[1001, 1002, 1003, 1004]
+      }
+      stubs.post("entities/ranking", ranking_request.to_json){ [200, nil, %[{"ranking":["1004","1003","1002","1001"]}]] }
+      @rankings = client.entities.get_rankings(ranking_request)
       stubs.verify_stubbed_calls
     end
 
     it "can get ranked entities" do
-      expect(@rankings[:entities]).to eq(%W[1004 1003 1002 1001])
-    end
-
-    it "can get ranking headers" do
-      expect(@rankings[:headers]).to eq({"attune-ranking"=>"test", "attune-cell"=>"test"})
+      expect(@rankings.ranking).to eq(%W[1004 1003 1002 1001])
     end
   end
 
   describe "multi_get_rankings" do
-    let(:req1){ CGI::escape 'anonymous=0cddbc0-6114-11e3-949a-0800200c9a66&view=b%2Fmens-pants&entity_collection=products&entities=1001%2C%2C1002%2C%2C1003%2C%2C1004&ip=none' }
-    let(:req2){ CGI::escape 'anonymous=0cddbc0-6114-11e3-949a-0800200c9a66&view=b%2Fmens-pants&entity_collection=products&entities=2001%2C%2C2002%2C%2C2003%2C%2C2004&ip=none' }
-
     before(:each) do
-      stubs.get("/rankings?ids=anonymous%3D0cddbc0-6114-11e3-949a-0800200c9a66%26entities%3D1001%252C%252C1002%252C%252C1003%252C%252C1004%26entity_collection%3Dproducts%26ip%3Dnone%26view%3Db%252Fmens-pants&ids=anonymous%3D0cddbc0-6114-11e3-949a-0800200c9a66%26entities%3D2001%252C%252C2002%252C%252C2003%252C%252C2004%26entity_collection%3Dproducts%26ip%3Dnone%26view%3Db%252Fmens-pants") do
-        [200, {"attune-ranking"=>"test", "attune-cell"=>"test"}, <<-JSON]
+      batch_request = {requests: [
+        {
+          anonymous: '0cddbc0-6114-11e3-949a-0800200c9a66',
+          view: 'b/mens-pants',
+          entity_type: 'products',
+          ids: %w[1001, 1002, 1003, 1004]
+        },
+        {
+          anonymous: '0cddbc0-6114-11e3-949a-0800200c9a66',
+          view: 'b/mens-pants',
+          entity_type: 'products',
+          ids: %w[2001, 2002, 2003, 2004]
+        }
+      ]}
+      stubs.post("entities/ranking/many", batch_request.to_json) do
+        [200, nil, <<-JSON]
   {
-      "errors": {},
-      "results": {
-          "anonymous=0cddbc0-6114-11e3-949a-0800200c9a66&entities=1001%2C%2C1002%2C%2C1003%2C%2C1004&entity_collection=products&ip=none&view=b%2Fmens-pants": {
+      "results": [
+          {
               "ranking": [
                   "1004",
                   "1003",
@@ -217,7 +217,7 @@ describe Attune::Client do
                   "1001"
               ]
           },
-          "anonymous=0cddbc0-6114-11e3-949a-0800200c9a66&entities=2001%2C%2C2002%2C%2C2003%2C%2C2004&entity_collection=products&ip=none&view=b%2Fmens-pants": {
+          {
               "ranking": [
                   "2004",
                   "2003",
@@ -225,36 +225,21 @@ describe Attune::Client do
                   "2001"
               ]
           }
-      }
+      ]
   }
         JSON
       end
-      @rankings = client.multi_get_rankings([
-        {
-          id: '0cddbc0-6114-11e3-949a-0800200c9a66',
-          view: 'b/mens-pants',
-          collection: 'products',
-          entities: %w[1001, 1002, 1003, 1004]
-        },
-        {
-          id: '0cddbc0-6114-11e3-949a-0800200c9a66',
-          view: 'b/mens-pants',
-          collection: 'products',
-          entities: %w[2001, 2002, 2003, 2004]
-        }
-      ])
+      @results = client.entities.batch_get_rankings(batch_request)
       stubs.verify_stubbed_calls
     end
 
     it "can get ranked entities" do
-      expect(@rankings[:entities]).to eq [
+      rankings = @results.results.map {|r| r.ranking }
+      expect(rankings).to eq [
         %W[1004 1003 1002 1001],
         %W[2004 2003 2002 2001]
       ]
     end
-
-    it "can get ranking headers" do
-      expect(@rankings[:headers]).to eq({"attune-ranking"=>"test", "attune-cell"=>"test"})
-    end
   end
 end
+

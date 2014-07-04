@@ -6,8 +6,8 @@ require 'attune/version'
 Gem::Specification.new do |spec|
   spec.name          = "attune"
   spec.version       = Attune::VERSION
-  spec.authors       = ["John Hawthorn"]
-  spec.email         = ["john@freerunningtechnologies.com"]
+  spec.authors       = ["John Hawthorn", "Jason Gritman"]
+  spec.email         = ["john@freerunningtechnologies.com", "jason@attune.co"]
   spec.summary       = %q{Client for the Attune product ranking API.}
   spec.description   = %q{Client for the Attune product ranking API.}
   spec.homepage      = "https://github.com/attune-api/attune-ruby"

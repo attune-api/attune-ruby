@@ -21,49 +21,49 @@ describe "remote requests" do
   end
 
   it "can create an anonymous user" do
-    id = client.create_anonymous(user_agent: 'Mozilla/5.0')
-    id.should =~ /[a-z0-9\-]+/
+    result = client.anonymous.create
+    result.id.should =~ /[a-z0-9\-]+/
   end
 
-  it "can create an anonymous user with an id" do
-    id = client.create_anonymous(id: '123456', user_agent: 'Mozilla/5.0')
-    id.should == '123456'
-  end
-
-  it "can bind an anonymous user" do
-    id = client.create_anonymous(id: '123456', user_agent: 'Mozilla/5.0')
-    client.bind(id, '654321')
+  it "can bind and get an anonymous user" do
+    client.anonymous.update('654321', Attune::Model::Customer.new(customer:'foobar'))
+    customer = client.anonymous.get('654321')
+    customer.customer.should == 'foobar'
   end
 
   let(:entities){ [202875,202876,202874,202900,202902,202898,202905,200182,200181,185940,188447,185932,190589,1238689589] }
   describe "get_rankings" do
     before(:each) do
-      id = client.create_anonymous(id: '123456', user_agent: 'Mozilla/5.0')
-      client.bind(id, '654321')
-      @result = client.get_rankings(id: '123456', view: 'b/mens-pants', collection: 'products', entities: entities)
+      anonymous_result = client.anonymous.create
+      params = Attune::Model::RankingParams.new
+      params.anonymous = anonymous_result.id
+      params.view = 'b/mens-pants'
+      params.entity_type = 'products'
+      params.ids = entities
+      @result = client.entities.get_rankings(params)
     end
     it "can get ranked entities" do
-      @result[:entities].should be_an Array
-      @result[:entities].sort.should == entities.map(&:to_s).sort
+      @result.ranking.should be_an Array
+      @result.ranking.sort.should == entities.map(&:to_s).sort
     end
-    specify { expect(@result[:headers]).to be_a Hash }
-    specify { expect(@result[:headers]).to have_key "attune-ranking" }
-    specify { expect(@result[:headers]).to have_key "attune-cell" }
   end
 
   describe "multi_get_rankings" do
     before(:each) do
-      id = client.create_anonymous(id: '123456', user_agent: 'Mozilla/5.0')
-      client.bind(id, '654321')
-      @results = client.multi_get_rankings([id: '123456', view: 'b/mens-pants', collection: 'products', entities: entities])
+      anonymous_result = client.anonymous.create
+      params = Attune::Model::RankingParams.new
+      params.anonymous = anonymous_result.id
+      params.view = 'b/mens-pants'
+      params.entity_type = 'products'
+      params.ids = entities
+      batch_request = Attune::Model::BatchRankingRequest.new
+      batch_request.requests = [params]
+      @results = client.entities.batch_get_rankings(batch_request)
     end
     it "can batch get rankings" do
-      @results[:entities].should be_an Array
-      result, = *@results[:entities]
-      result.sort.should == entities.map(&:to_s).sort
+      @results.results.should be_an Array
+      ranking = @results.results[0].ranking
+      ranking.sort.should == entities.map(&:to_s).sort
     end
-    specify { expect(@results[:headers]).to be_a Hash }
-    specify { expect(@results[:headers]).to have_key "attune-ranking" }
-    specify { expect(@results[:headers]).to have_key "attune-cell" }
   end
 end
