@@ -8,7 +8,7 @@ module Attune
   module Default
     extend Configurable
 
-    ENDPOINT = "http://localhost/".freeze
+    ENDPOINT = "https://api.attune-staging.co".freeze
 
     # user our version of NetHttpPersistent adapter
     Faraday::Adapter.register_middleware(attune_http_persistent: NetHttpPersistent)

@@ -5,6 +5,9 @@ module Attune
       attr_accessor :id
       
 
+      attr_accessor :scope
+      
+
       attr_accessor :ids
       
 
@@ -26,9 +29,6 @@ module Attune
       attr_accessor :created_at
       
 
-      attr_accessor :scope
-      
-
       def initialize(attributes = {})
         return if attributes.empty?
         # Morph attribute keys into undescored rubyish style
@@ -36,6 +36,13 @@ module Attune
           # Workaround since JSON.parse has accessors as strings rather than symbols
             @id = attributes["id"] || attributes[:"id"]
         end
+        if self.class.attribute_map[:"scope"]
+          value = attributes["scope"] || attributes[:"scope"]
+            if value.is_a?(Array)
+              @scope = value
+
+            end
+          end
         if self.class.attribute_map[:"ids"]
           value = attributes["ids"] || attributes[:"ids"]
             if value.is_a?(Array)
@@ -67,13 +74,6 @@ module Attune
           # Workaround since JSON.parse has accessors as strings rather than symbols
             @created_at = attributes["createdAt"] || attributes[:"created_at"]
         end
-        if self.class.attribute_map[:"scope"]
-          value = attributes["scope"] || attributes[:"scope"]
-            if value.is_a?(Array)
-              @scope = value
-
-            end
-          end
         
 
       end
@@ -95,14 +95,14 @@ module Attune
       def self.attribute_map
         {
           :id => :id,
+          :scope => :scope,
           :ids => :ids,
           :disabled => :disabled,
           :consumer => :consumer,
           :entity_type => :entityType,
           :start_date => :startDate,
           :end_date => :endDate,
-          :created_at => :createdAt,
-          :scope => :scope
+          :created_at => :createdAt
 
         }
       end
