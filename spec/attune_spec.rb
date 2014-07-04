@@ -6,7 +6,7 @@ describe Attune do
   end
   describe 'defaults' do
     subject { Attune::Default }
-    specify { expect(subject.endpoint).to eq 'http://localhost/' }
+    specify { expect(subject.endpoint).to eq 'https://api.attune-staging.co' }
     specify { expect(subject.disabled).to eq false }
   end
   describe 'configure' do
