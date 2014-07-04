@@ -10,7 +10,7 @@ module Attune
         @client = client
       end
 
-      # create
+      # Create anonymous visitor
       #
       # @return [Attune::Model::AnonymousResult]
       # @raise [ArgumentError] if user_agent is not provided

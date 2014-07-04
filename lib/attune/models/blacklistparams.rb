@@ -2,6 +2,12 @@ module Attune
   module Model
     # 
     class BlacklistParams
+      attr_accessor :active_from
+      
+
+      attr_accessor :active_to
+      
+
       attr_accessor :scope
       
 
@@ -14,15 +20,17 @@ module Attune
       attr_accessor :disabled
       
 
-      attr_accessor :active_from
-      
-
-      attr_accessor :active_to
-      
-
       def initialize(attributes = {})
         return if attributes.empty?
         # Morph attribute keys into undescored rubyish style
+        if self.class.attribute_map[:"active_from"]
+          # Workaround since JSON.parse has accessors as strings rather than symbols
+            @active_from = attributes["activeFrom"] || attributes[:"active_from"]
+        end
+        if self.class.attribute_map[:"active_to"]
+          # Workaround since JSON.parse has accessors as strings rather than symbols
+            @active_to = attributes["activeTo"] || attributes[:"active_to"]
+        end
         if self.class.attribute_map[:"scope"]
           value = attributes["scope"] || attributes[:"scope"]
             if value.is_a?(Array)
@@ -45,14 +53,6 @@ module Attune
           # Workaround since JSON.parse has accessors as strings rather than symbols
             @disabled = attributes["disabled"] || attributes[:"disabled"]
         end
-        if self.class.attribute_map[:"active_from"]
-          # Workaround since JSON.parse has accessors as strings rather than symbols
-            @active_from = attributes["activeFrom"] || attributes[:"active_from"]
-        end
-        if self.class.attribute_map[:"active_to"]
-          # Workaround since JSON.parse has accessors as strings rather than symbols
-            @active_to = attributes["activeTo"] || attributes[:"active_to"]
-        end
         
 
       end
@@ -73,12 +73,12 @@ module Attune
       # :internal => :external
       def self.attribute_map
         {
+          :active_from => :activeFrom,
+          :active_to => :activeTo,
           :scope => :scope,
           :entity_type => :entityType,
           :ids => :ids,
-          :disabled => :disabled,
-          :active_from => :activeFrom,
-          :active_to => :activeTo
+          :disabled => :disabled
 
         }
       end

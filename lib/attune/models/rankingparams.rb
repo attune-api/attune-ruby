@@ -2,16 +2,16 @@ module Attune
   module Model
     # 
     class RankingParams
-      attr_accessor :scope
+      attr_accessor :user_agent
       
 
       attr_accessor :ip
       
 
-      attr_accessor :user_agent
+      attr_accessor :customer
       
 
-      attr_accessor :view
+      attr_accessor :scope
       
 
       attr_accessor :entity_type
@@ -20,7 +20,7 @@ module Attune
       attr_accessor :ids
       
 
-      attr_accessor :customer
+      attr_accessor :view
       
 
       attr_accessor :anonymous
@@ -29,6 +29,18 @@ module Attune
       def initialize(attributes = {})
         return if attributes.empty?
         # Morph attribute keys into undescored rubyish style
+        if self.class.attribute_map[:"user_agent"]
+          # Workaround since JSON.parse has accessors as strings rather than symbols
+            @user_agent = attributes["userAgent"] || attributes[:"user_agent"]
+        end
+        if self.class.attribute_map[:"ip"]
+          # Workaround since JSON.parse has accessors as strings rather than symbols
+            @ip = attributes["ip"] || attributes[:"ip"]
+        end
+        if self.class.attribute_map[:"customer"]
+          # Workaround since JSON.parse has accessors as strings rather than symbols
+            @customer = attributes["customer"] || attributes[:"customer"]
+        end
         if self.class.attribute_map[:"scope"]
           value = attributes["scope"] || attributes[:"scope"]
             if value.is_a?(Array)
@@ -36,18 +48,6 @@ module Attune
 
             end
           end
-        if self.class.attribute_map[:"ip"]
-          # Workaround since JSON.parse has accessors as strings rather than symbols
-            @ip = attributes["ip"] || attributes[:"ip"]
-        end
-        if self.class.attribute_map[:"user_agent"]
-          # Workaround since JSON.parse has accessors as strings rather than symbols
-            @user_agent = attributes["userAgent"] || attributes[:"user_agent"]
-        end
-        if self.class.attribute_map[:"view"]
-          # Workaround since JSON.parse has accessors as strings rather than symbols
-            @view = attributes["view"] || attributes[:"view"]
-        end
         if self.class.attribute_map[:"entity_type"]
           # Workaround since JSON.parse has accessors as strings rather than symbols
             @entity_type = attributes["entityType"] || attributes[:"entity_type"]
@@ -59,9 +59,9 @@ module Attune
 
             end
           end
-        if self.class.attribute_map[:"customer"]
+        if self.class.attribute_map[:"view"]
           # Workaround since JSON.parse has accessors as strings rather than symbols
-            @customer = attributes["customer"] || attributes[:"customer"]
+            @view = attributes["view"] || attributes[:"view"]
         end
         if self.class.attribute_map[:"anonymous"]
           # Workaround since JSON.parse has accessors as strings rather than symbols
@@ -87,13 +87,13 @@ module Attune
       # :internal => :external
       def self.attribute_map
         {
-          :scope => :scope,
-          :ip => :ip,
           :user_agent => :userAgent,
-          :view => :view,
+          :ip => :ip,
+          :customer => :customer,
+          :scope => :scope,
           :entity_type => :entityType,
           :ids => :ids,
-          :customer => :customer,
+          :view => :view,
           :anonymous => :anonymous
 
         }
