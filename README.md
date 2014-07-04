@@ -31,7 +31,7 @@ Visitors to the application should be tagged with an anonymous user id
 ``` ruby
 class ApplicationController
   before_filter do
-    session[:attune_id] ||= attune_client.create_anonymous(user_agent: request.env["HTTP_USER_AGENT"])
+    session[:attune_id] ||= attune_client.anonymous.create.id
   end
 
   private
@@ -49,7 +49,8 @@ class SessionsController
 
   def create
     # ...
-    attune_client.bind(session[:attune_id], current_user.id)
+    attune_customer = Attune::Model::Customer.new(customer: current_user.id)
+    attune_client.anonymous.update(session[:attune_id], attune_customer)
   end
 end
 ```
@@ -64,14 +65,15 @@ class ProductsController
 
   private
   def sorted products
-    ranking = attune_client.get_rankings(
-      id: session[:attune_id],
-      view: request.fullpath,
-      collection: 'products',
-      entities: products.map(&:id)
-    )
+    ranking_params = Attune::Model::RankingParams.new
+    ranking_params.anonymous = session[:attune_id]
+    ranking_params.view = request.fullpath
+    ranking_params.entity_type = 'products'
+    ranking_params.user_agent = request.env["HTTP_USER_AGENT"]
+    ranking_params.ids = products.map(&:id)
+    ranking = attune_client.entities.get_rankings(ranking_params)
     products.sort_by do |product|
-      ranking[:entities].index(product.id.to_s)
+      ranking.ranking.index(product.id.to_s)
     end
   end
 end
