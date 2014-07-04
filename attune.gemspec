@@ -6,8 +6,8 @@ require 'attune/version'
 Gem::Specification.new do |spec|
   spec.name          = "attune"
   spec.version       = Attune::VERSION
-  spec.authors       = ["John Hawthorn"]
-  spec.email         = ["john@freerunningtechnologies.com"]
+  spec.authors       = ["John Hawthorn", "Jason Gritman"]
+  spec.email         = ["john@freerunningtechnologies.com", "jason@attune.co"]
   spec.summary       = %q{Client for the Attune product ranking API.}
   spec.description   = %q{Client for the Attune product ranking API.}
   spec.homepage      = "https://github.com/attune-api/attune-ruby"
@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
   spec.files         = `git ls-files`.split($/)
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
-  spec.require_paths = ["lib", "model"]
+  spec.require_paths = ["lib"]
 
   spec.add_dependency "faraday", "~> 0.8"
   spec.add_dependency "net-http-persistent"
