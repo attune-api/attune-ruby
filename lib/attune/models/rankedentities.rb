@@ -11,16 +11,6 @@ module Attune
       attr_accessor :ranking
       
 
-      # :internal => :external
-      def self.attribute_map
-        {
-          :message => :message,
-          :status => :status,
-          :ranking => :ranking
-
-        }
-      end
-
       def initialize(attributes = {})
         return if attributes.empty?
         # Morph attribute keys into undescored rubyish style
@@ -53,6 +43,17 @@ module Attune
 
       def to_json(options = {})
         to_body.to_json
+      end
+
+      private
+      # :internal => :external
+      def self.attribute_map
+        {
+          :message => :message,
+          :status => :status,
+          :ranking => :ranking
+
+        }
       end
     end
   end

@@ -8,42 +8,26 @@ module Attune
       attr_accessor :ids
       
 
-      attr_accessor :entity_type
+      attr_accessor :disabled
       
 
       attr_accessor :consumer
       
 
-      attr_accessor :created_at
-      
-
-      attr_accessor :end_date
+      attr_accessor :entity_type
       
 
       attr_accessor :start_date
       
 
-      attr_accessor :disabled
+      attr_accessor :end_date
+      
+
+      attr_accessor :created_at
       
 
       attr_accessor :scope
       
-
-      # :internal => :external
-      def self.attribute_map
-        {
-          :id => :id,
-          :ids => :ids,
-          :entity_type => :entityType,
-          :consumer => :consumer,
-          :created_at => :createdAt,
-          :end_date => :endDate,
-          :start_date => :startDate,
-          :disabled => :disabled,
-          :scope => :scope
-
-        }
-      end
 
       def initialize(attributes = {})
         return if attributes.empty?
@@ -59,29 +43,29 @@ module Attune
 
             end
           end
-        if self.class.attribute_map[:"entity_type"]
+        if self.class.attribute_map[:"disabled"]
           # Workaround since JSON.parse has accessors as strings rather than symbols
-            @entity_type = attributes["entityType"] || attributes[:"entity_type"]
+            @disabled = attributes["disabled"] || attributes[:"disabled"]
         end
         if self.class.attribute_map[:"consumer"]
           # Workaround since JSON.parse has accessors as strings rather than symbols
             @consumer = attributes["consumer"] || attributes[:"consumer"]
         end
-        if self.class.attribute_map[:"created_at"]
+        if self.class.attribute_map[:"entity_type"]
           # Workaround since JSON.parse has accessors as strings rather than symbols
-            @created_at = attributes["createdAt"] || attributes[:"created_at"]
-        end
-        if self.class.attribute_map[:"end_date"]
-          # Workaround since JSON.parse has accessors as strings rather than symbols
-            @end_date = attributes["endDate"] || attributes[:"end_date"]
+            @entity_type = attributes["entityType"] || attributes[:"entity_type"]
         end
         if self.class.attribute_map[:"start_date"]
           # Workaround since JSON.parse has accessors as strings rather than symbols
             @start_date = attributes["startDate"] || attributes[:"start_date"]
         end
-        if self.class.attribute_map[:"disabled"]
+        if self.class.attribute_map[:"end_date"]
           # Workaround since JSON.parse has accessors as strings rather than symbols
-            @disabled = attributes["disabled"] || attributes[:"disabled"]
+            @end_date = attributes["endDate"] || attributes[:"end_date"]
+        end
+        if self.class.attribute_map[:"created_at"]
+          # Workaround since JSON.parse has accessors as strings rather than symbols
+            @created_at = attributes["createdAt"] || attributes[:"created_at"]
         end
         if self.class.attribute_map[:"scope"]
           value = attributes["scope"] || attributes[:"scope"]
@@ -104,6 +88,23 @@ module Attune
 
       def to_json(options = {})
         to_body.to_json
+      end
+
+      private
+      # :internal => :external
+      def self.attribute_map
+        {
+          :id => :id,
+          :ids => :ids,
+          :disabled => :disabled,
+          :consumer => :consumer,
+          :entity_type => :entityType,
+          :start_date => :startDate,
+          :end_date => :endDate,
+          :created_at => :createdAt,
+          :scope => :scope
+
+        }
       end
     end
   end

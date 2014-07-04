@@ -72,35 +72,28 @@ describe Attune::Client do
         result = client.get_auth_token("id", "secret")
         expect(result).to match(/^[a-z0-9\-]+$/)
       end
-      it "mocks create_anonymous with an id" do
-        result = client.create_anonymous(id: '12345', user_agent: 'Mozilla/5.0')
-        expect(result).to eq('12345')
-      end
+
       it "mocks create_anonymous with no id" do
-        result = client.create_anonymous(user_agent: 'Mozilla/5.0')
-        expect(result).to match(/^[a-z0-9\-]+$/)
+        result = client.anonymous.create
+        expect(result.id).to match(/^[a-z0-9\-]+$/)
       end
       describe "mocks get_rankings" do
         let(:entities) { %w[1001 1002 1003 1004] }
-        let(:expected) do
-          {
-            headers: {"attune-cell"=>"mock", "attune-ranking"=>"mock"},
-            entities: entities.map { |e| e.to_s }
-          }
-        end
+        let(:expected) { entities.map { |e| e.to_s } }
 
         before(:each) do
-          @result = client.get_rankings(
-            id: 'abcd123',
+          params = Attune::Model::RankingParams.new(
+            anonymous: 'abcd123',
             view: 'b/mens-pants',
-            collection: 'products',
-            entities: entities
+            entity_type: 'products',
+            ids: entities
           )
+          @result = client.entities.get_rankings(params)
         end
 
         context "with entities sent as strings" do
           it "returns entities in order sent" do
-            expect(@result).to eq expected
+            expect(@result.ranking).to eq expected
           end
         end
 
@@ -108,31 +101,30 @@ describe Attune::Client do
           let(:entities) { [1001, 1002, 1003, 1004] }
 
           it "returns entities in order sent as strings" do
-            expect(@result).to eq expected
+            expect(@result.ranking).to eq expected
           end
         end
       end
       describe "mocks multi_get_rankings" do
         let(:entities) { %w[1001 1002 1003 1004] }
-        let(:expected) do
-          {
-            headers: {"attune-cell"=>"mock", "attune-ranking"=>"mock"},
-            entities: [ entities.map { |e| e.to_s } ]
-          }
-        end
+        let(:expected) { [entities.map { |e| e.to_s }] }
 
         before(:each) do
-          @result = client.multi_get_rankings([
-            id: 'abcd123',
+          params = Attune::Model::RankingParams.new(
+            anonymous: 'abcd123',
             view: 'b/mens-pants',
-            collection: 'products',
-            entities: entities
-          ])
+            entity_type: 'products',
+            ids: entities
+          )
+          batch_request = Attune::Model::BatchRankingRequest.new
+          batch_request.requests = [params]
+          @result = client.entities.batch_get_rankings(batch_request)
         end
 
         context "with entities sent as strings" do
           it "returns entities in order sent" do
-            expect(@result).to eq expected
+            rankings = @result.results.map(&:ranking)
+            expect(rankings).to eq expected
           end
         end
 
@@ -140,7 +132,8 @@ describe Attune::Client do
           let(:entities) { [1001, 1002, 1003, 1004] }
 
           it "returns entities in order sent as strings" do
-            expect(@result).to eq expected
+            rankings = @result.results.map(&:ranking)
+            expect(rankings).to eq expected
           end
         end
       end
