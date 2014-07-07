@@ -1,6 +1,6 @@
 module Attune
   module Model
-    # 
+    # List of ids in ranked order. If an error occurs, returns message and status code.
     class RankedEntities
       attr_accessor :message
       
@@ -25,7 +25,7 @@ module Attune
         if self.class.attribute_map[:"ranking"]
           value = attributes["ranking"] || attributes[:"ranking"]
             if value.is_a?(Array)
-              @ranking = value
+              @ranking = value.map{ |v| String.new(v) }
 
             end
           end
@@ -33,6 +33,8 @@ module Attune
 
       end
 
+      # Return attributes of this model as a Hash
+      # @return [Hash]
       def to_body
         body = {}
         self.class.attribute_map.each_pair do |key, value|
@@ -41,6 +43,8 @@ module Attune
         body
       end
 
+      # Return attributes of this model as a JSON string
+      # @return [String]
       def to_json(options = {})
         to_body.to_json
       end

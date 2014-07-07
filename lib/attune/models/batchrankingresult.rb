@@ -1,6 +1,6 @@
 module Attune
   module Model
-    # 
+    # Wrapper of multiple ranking results.
     class BatchRankingResult
       attr_accessor :results
       
@@ -19,6 +19,8 @@ module Attune
 
       end
 
+      # Return attributes of this model as a Hash
+      # @return [Hash]
       def to_body
         body = {}
         self.class.attribute_map.each_pair do |key, value|
@@ -27,6 +29,8 @@ module Attune
         body
       end
 
+      # Return attributes of this model as a JSON string
+      # @return [String]
       def to_json(options = {})
         to_body.to_json
       end

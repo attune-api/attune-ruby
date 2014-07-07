@@ -1,17 +1,17 @@
 module Attune
   module Model
-    # 
+    # Inputs for ranking a set of ids for a particular user.
     class RankingParams
-      attr_accessor :user_agent
+      attr_accessor :scope
       
 
-      attr_accessor :ip
+      attr_accessor :anonymous
       
 
       attr_accessor :customer
       
 
-      attr_accessor :scope
+      attr_accessor :user_agent
       
 
       attr_accessor :entity_type
@@ -20,27 +20,15 @@ module Attune
       attr_accessor :ids
       
 
-      attr_accessor :view
+      attr_accessor :ip
       
 
-      attr_accessor :anonymous
+      attr_accessor :view
       
 
       def initialize(attributes = {})
         return if attributes.empty?
         # Morph attribute keys into undescored rubyish style
-        if self.class.attribute_map[:"user_agent"]
-          # Workaround since JSON.parse has accessors as strings rather than symbols
-            @user_agent = attributes["userAgent"] || attributes[:"user_agent"]
-        end
-        if self.class.attribute_map[:"ip"]
-          # Workaround since JSON.parse has accessors as strings rather than symbols
-            @ip = attributes["ip"] || attributes[:"ip"]
-        end
-        if self.class.attribute_map[:"customer"]
-          # Workaround since JSON.parse has accessors as strings rather than symbols
-            @customer = attributes["customer"] || attributes[:"customer"]
-        end
         if self.class.attribute_map[:"scope"]
           value = attributes["scope"] || attributes[:"scope"]
             if value.is_a?(Array)
@@ -48,6 +36,18 @@ module Attune
 
             end
           end
+        if self.class.attribute_map[:"anonymous"]
+          # Workaround since JSON.parse has accessors as strings rather than symbols
+            @anonymous = attributes["anonymous"] || attributes[:"anonymous"]
+        end
+        if self.class.attribute_map[:"customer"]
+          # Workaround since JSON.parse has accessors as strings rather than symbols
+            @customer = attributes["customer"] || attributes[:"customer"]
+        end
+        if self.class.attribute_map[:"user_agent"]
+          # Workaround since JSON.parse has accessors as strings rather than symbols
+            @user_agent = attributes["userAgent"] || attributes[:"user_agent"]
+        end
         if self.class.attribute_map[:"entity_type"]
           # Workaround since JSON.parse has accessors as strings rather than symbols
             @entity_type = attributes["entityType"] || attributes[:"entity_type"]
@@ -55,22 +55,24 @@ module Attune
         if self.class.attribute_map[:"ids"]
           value = attributes["ids"] || attributes[:"ids"]
             if value.is_a?(Array)
-              @ids = value
+              @ids = value.map{ |v| String.new(v) }
 
             end
           end
+        if self.class.attribute_map[:"ip"]
+          # Workaround since JSON.parse has accessors as strings rather than symbols
+            @ip = attributes["ip"] || attributes[:"ip"]
+        end
         if self.class.attribute_map[:"view"]
           # Workaround since JSON.parse has accessors as strings rather than symbols
             @view = attributes["view"] || attributes[:"view"]
-        end
-        if self.class.attribute_map[:"anonymous"]
-          # Workaround since JSON.parse has accessors as strings rather than symbols
-            @anonymous = attributes["anonymous"] || attributes[:"anonymous"]
         end
         
 
       end
 
+      # Return attributes of this model as a Hash
+      # @return [Hash]
       def to_body
         body = {}
         self.class.attribute_map.each_pair do |key, value|
@@ -79,6 +81,8 @@ module Attune
         body
       end
 
+      # Return attributes of this model as a JSON string
+      # @return [String]
       def to_json(options = {})
         to_body.to_json
       end
@@ -87,14 +91,14 @@ module Attune
       # :internal => :external
       def self.attribute_map
         {
-          :user_agent => :userAgent,
-          :ip => :ip,
-          :customer => :customer,
           :scope => :scope,
+          :anonymous => :anonymous,
+          :customer => :customer,
+          :user_agent => :userAgent,
           :entity_type => :entityType,
           :ids => :ids,
-          :view => :view,
-          :anonymous => :anonymous
+          :ip => :ip,
+          :view => :view
 
         }
       end

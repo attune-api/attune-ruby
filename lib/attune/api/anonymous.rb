@@ -49,7 +49,7 @@ module Attune
       
       # Returns an anonymous visitor, containing any assigned customer ID.
       #
-      # @param [string] anonymous
+      # @param [String] anonymous
       # @return [Attune::Model::Customer]
       # @raise [ArgumentError] if user_agent is not provided
       # @raise [Faraday::Error::ClientError] if the request fails or exceeds the timeout
@@ -90,8 +90,8 @@ module Attune
       
       # Binds one actor to another, allowing activities of those actors to be shared between the two.
       #
-      # @param [string] anonymous
-      # @param [Customer] body
+      # @param [String] anonymous
+      # @param [Attune::Model::Customer] body
       # @raise [ArgumentError] if user_agent is not provided
       # @raise [Faraday::Error::ClientError] if the request fails or exceeds the timeout
       # @raise [AuthenticationException] if authorization header not accepted

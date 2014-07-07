@@ -49,7 +49,7 @@ module Attune
       
       # Save a new blacklist entry.
       #
-      # @param [BlacklistParams] body
+      # @param [Attune::Model::BlacklistParams] body
       # @return [Attune::Model::BlacklistSaveResponse]
       # @raise [ArgumentError] if user_agent is not provided
       # @raise [Faraday::Error::ClientError] if the request fails or exceeds the timeout
@@ -107,7 +107,7 @@ module Attune
       
       # Returns a ranking of the specified entities for the current user.
       #
-      # @param [RankingParams] body
+      # @param [Attune::Model::RankingParams] body
       # @return [Attune::Model::RankedEntities]
       # @raise [ArgumentError] if user_agent is not provided
       # @raise [Faraday::Error::ClientError] if the request fails or exceeds the timeout
@@ -167,7 +167,7 @@ module Attune
       
       # Returns multiple rankings of the specified entities for the current user.
       #
-      # @param [BatchRankingRequest] body
+      # @param [Attune::Model::BatchRankingRequest] body
       # @return [Attune::Model::BatchRankingResult]
       # @raise [ArgumentError] if user_agent is not provided
       # @raise [Faraday::Error::ClientError] if the request fails or exceeds the timeout

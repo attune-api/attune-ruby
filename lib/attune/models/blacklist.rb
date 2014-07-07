@@ -5,13 +5,13 @@ module Attune
       attr_accessor :id
       
 
-      attr_accessor :scope
-      
-
       attr_accessor :ids
       
 
       attr_accessor :disabled
+      
+
+      attr_accessor :scope
       
 
       attr_accessor :consumer
@@ -36,17 +36,10 @@ module Attune
           # Workaround since JSON.parse has accessors as strings rather than symbols
             @id = attributes["id"] || attributes[:"id"]
         end
-        if self.class.attribute_map[:"scope"]
-          value = attributes["scope"] || attributes[:"scope"]
-            if value.is_a?(Array)
-              @scope = value
-
-            end
-          end
         if self.class.attribute_map[:"ids"]
           value = attributes["ids"] || attributes[:"ids"]
             if value.is_a?(Array)
-              @ids = value
+              @ids = value.map{ |v| String.new(v) }
 
             end
           end
@@ -54,6 +47,13 @@ module Attune
           # Workaround since JSON.parse has accessors as strings rather than symbols
             @disabled = attributes["disabled"] || attributes[:"disabled"]
         end
+        if self.class.attribute_map[:"scope"]
+          value = attributes["scope"] || attributes[:"scope"]
+            if value.is_a?(Array)
+              @scope = value.map{ |v| String.new(v) }
+
+            end
+          end
         if self.class.attribute_map[:"consumer"]
           # Workaround since JSON.parse has accessors as strings rather than symbols
             @consumer = attributes["consumer"] || attributes[:"consumer"]
@@ -78,6 +78,8 @@ module Attune
 
       end
 
+      # Return attributes of this model as a Hash
+      # @return [Hash]
       def to_body
         body = {}
         self.class.attribute_map.each_pair do |key, value|
@@ -86,6 +88,8 @@ module Attune
         body
       end
 
+      # Return attributes of this model as a JSON string
+      # @return [String]
       def to_json(options = {})
         to_body.to_json
       end
@@ -95,9 +99,9 @@ module Attune
       def self.attribute_map
         {
           :id => :id,
-          :scope => :scope,
           :ids => :ids,
           :disabled => :disabled,
+          :scope => :scope,
           :consumer => :consumer,
           :entity_type => :entityType,
           :start_date => :startDate,
