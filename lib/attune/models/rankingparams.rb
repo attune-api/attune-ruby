@@ -1,6 +1,15 @@
 module Attune
   module Model
     # Inputs for ranking a set of ids for a particular user.
+    #
+    # @attr [Array<ScopeEntry>] scope
+    # @attr [String] anonymous
+    # @attr [String] customer
+    # @attr [String] user_agent
+    # @attr [String] entity_type
+    # @attr [Array<string>] ids
+    # @attr [String] ip
+    # @attr [String] view
     class RankingParams
       attr_accessor :scope
       
@@ -28,7 +37,6 @@ module Attune
 
       def initialize(attributes = {})
         return if attributes.empty?
-        # Morph attribute keys into undescored rubyish style
         if self.class.attribute_map[:"scope"]
           value = attributes["scope"] || attributes[:"scope"]
             if value.is_a?(Array)
@@ -71,8 +79,6 @@ module Attune
 
       end
 
-      # Return attributes of this model as a Hash
-      # @return [Hash]
       def to_body
         body = {}
         self.class.attribute_map.each_pair do |key, value|
@@ -81,8 +87,6 @@ module Attune
         body
       end
 
-      # Return attributes of this model as a JSON string
-      # @return [String]
       def to_json(options = {})
         to_body.to_json
       end

@@ -1,6 +1,13 @@
 module Attune
   module Model
     # 
+    #
+    # @attr [Array<string>] scope
+    # @attr [String] active_from
+    # @attr [String] active_to
+    # @attr [String] entity_type
+    # @attr [Array<string>] ids
+    # @attr [Boolean] disabled
     class BlacklistParams
       attr_accessor :scope
       
@@ -22,7 +29,6 @@ module Attune
 
       def initialize(attributes = {})
         return if attributes.empty?
-        # Morph attribute keys into undescored rubyish style
         if self.class.attribute_map[:"scope"]
           value = attributes["scope"] || attributes[:"scope"]
             if value.is_a?(Array)
@@ -57,8 +63,6 @@ module Attune
 
       end
 
-      # Return attributes of this model as a Hash
-      # @return [Hash]
       def to_body
         body = {}
         self.class.attribute_map.each_pair do |key, value|
@@ -67,8 +71,6 @@ module Attune
         body
       end
 
-      # Return attributes of this model as a JSON string
-      # @return [String]
       def to_json(options = {})
         to_body.to_json
       end

@@ -1,13 +1,14 @@
 module Attune
   module Model
     # 
+    #
+    # @attr [String] result
     class BlacklistSaveResponse
       attr_accessor :result
       
 
       def initialize(attributes = {})
         return if attributes.empty?
-        # Morph attribute keys into undescored rubyish style
         if self.class.attribute_map[:"result"]
           # Workaround since JSON.parse has accessors as strings rather than symbols
             @result = attributes["result"] || attributes[:"result"]
@@ -16,8 +17,6 @@ module Attune
 
       end
 
-      # Return attributes of this model as a Hash
-      # @return [Hash]
       def to_body
         body = {}
         self.class.attribute_map.each_pair do |key, value|
@@ -26,8 +25,6 @@ module Attune
         body
       end
 
-      # Return attributes of this model as a JSON string
-      # @return [String]
       def to_json(options = {})
         to_body.to_json
       end
