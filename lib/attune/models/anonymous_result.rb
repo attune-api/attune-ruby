@@ -9,20 +9,17 @@ module Attune
 
       def initialize(attributes = {})
         return if attributes.empty?
-        if self.class.attribute_map[:"id"]
-          # Workaround since JSON.parse has accessors as strings rather than symbols
-            @id = attributes["id"] || attributes[:"id"]
-        end
+        # Workaround since JSON.parse has accessors as strings rather than symbols
+        @id = attributes["id"] || attributes[:"id"]
         
 
       end
 
       def to_body
-        body = {}
-        self.class.attribute_map.each_pair do |key, value|
-          body[value] = self.send(key) unless self.send(key).nil?
-        end
-        body
+        Hash[ATTRIBUTE_MAP.map do |internal, external|
+          next unless value = send(internal)
+          [external, value]
+        end.compact]
       end
 
       def to_json(options = {})
@@ -31,12 +28,10 @@ module Attune
 
       private
       # :internal => :external
-      def self.attribute_map
-        {
+      ATTRIBUTE_MAP = {
           :id => :id
 
         }
-      end
     end
   end
 end
