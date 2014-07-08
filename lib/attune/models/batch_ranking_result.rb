@@ -1,8 +1,8 @@
 module Attune
   module Model
-    # Wrapper of multiple ranking results.
+    # Array of ranking results.
     #
-    # @attr [Array<Attune::Model::RankedEntities>] results
+    # @attr [Array<Attune::Model::RankedEntities>] results Array of rankings in order of the parameters provided as input.
     class BatchRankingResult
       attr_accessor :results
       

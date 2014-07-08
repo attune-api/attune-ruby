@@ -2,7 +2,7 @@ module Attune
   module Model
     # 
     #
-    # @attr [Array<Attune::Model::Blacklist>] blacklists
+    # @attr [Array<Attune::Model::Blacklist>] blacklists 
     class BlacklistGetResponse
       attr_accessor :blacklists
       

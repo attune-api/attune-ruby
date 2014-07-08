@@ -2,7 +2,7 @@ module Attune
   module Model
     # Result of creating an anonymous user.
     #
-    # @attr [String] id
+    # @attr [String] id Id of the anonymous user.
     class AnonymousResult
       attr_accessor :id
       

@@ -1,8 +1,8 @@
 module Attune
   module Model
-    # Wrapper for requesting multiple rankings in a single call.
+    # Array of the parameters specified for a ranking request
     #
-    # @attr [Array<Attune::Model::RankingParams>] requests
+    # @attr [Array<Attune::Model::RankingParams>] requests 
     class BatchRankingRequest
       attr_accessor :requests
       

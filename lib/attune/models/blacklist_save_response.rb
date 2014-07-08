@@ -2,7 +2,7 @@ module Attune
   module Model
     # 
     #
-    # @attr [String] result
+    # @attr [String] result 
     class BlacklistSaveResponse
       attr_accessor :result
       

@@ -2,7 +2,7 @@ module Attune
   module Model
     # Customer associated with an anonymous user
     #
-    # @attr [String] customer
+    # @attr [String] customer 
     class Customer
       attr_accessor :customer
       

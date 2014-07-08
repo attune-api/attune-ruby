@@ -2,26 +2,20 @@ module Attune
   module Model
     # 
     #
-    # @attr [String] id
-    # @attr [Array<String>] ids
-    # @attr [Boolean] disabled
-    # @attr [Array<String>] scope
-    # @attr [String] consumer
-    # @attr [String] entity_type
-    # @attr [String] start_date
-    # @attr [String] end_date
-    # @attr [String] created_at
+    # @attr [String] id 
+    # @attr [Boolean] disabled 
+    # @attr [String] consumer 
+    # @attr [String] entity_type 
+    # @attr [String] start_date 
+    # @attr [String] end_date 
+    # @attr [String] created_at 
+    # @attr [Array<String>] ids 
+    # @attr [Array<String>] scope 
     class Blacklist
       attr_accessor :id
       
 
-      attr_accessor :ids
-      
-
       attr_accessor :disabled
-      
-
-      attr_accessor :scope
       
 
       attr_accessor :consumer
@@ -39,22 +33,18 @@ module Attune
       attr_accessor :created_at
       
 
+      attr_accessor :ids
+      
+
+      attr_accessor :scope
+      
+
       def initialize(attributes = {})
         return if attributes.empty?
         # Workaround since JSON.parse has accessors as strings rather than symbols
         @id = attributes["id"] || attributes[:"id"]
-        value = attributes["ids"] || attributes[:"ids"]
-        if value.is_a?(Array)
-          @ids = value
-
-        end
         # Workaround since JSON.parse has accessors as strings rather than symbols
         @disabled = attributes["disabled"] || attributes[:"disabled"]
-        value = attributes["scope"] || attributes[:"scope"]
-        if value.is_a?(Array)
-          @scope = value
-
-        end
         # Workaround since JSON.parse has accessors as strings rather than symbols
         @consumer = attributes["consumer"] || attributes[:"consumer"]
         # Workaround since JSON.parse has accessors as strings rather than symbols
@@ -65,6 +55,16 @@ module Attune
         @end_date = attributes["endDate"] || attributes[:"end_date"]
         # Workaround since JSON.parse has accessors as strings rather than symbols
         @created_at = attributes["createdAt"] || attributes[:"created_at"]
+        value = attributes["ids"] || attributes[:"ids"]
+        if value.is_a?(Array)
+          @ids = value
+
+        end
+        value = attributes["scope"] || attributes[:"scope"]
+        if value.is_a?(Array)
+          @scope = value
+
+        end
         
 
       end
@@ -84,14 +84,14 @@ module Attune
       # :internal => :external
       ATTRIBUTE_MAP = {
           :id => :id,
-          :ids => :ids,
           :disabled => :disabled,
-          :scope => :scope,
           :consumer => :consumer,
           :entity_type => :entityType,
           :start_date => :startDate,
           :end_date => :endDate,
-          :created_at => :createdAt
+          :created_at => :createdAt,
+          :ids => :ids,
+          :scope => :scope
 
         }
     end

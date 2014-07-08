@@ -1,9 +1,9 @@
 module Attune
   module Model
-    # Name value pairs indicating the context where a ranking will be displayed.
+    # Name/value pairs that provide additional context to the request
     #
-    # @attr [String] name
-    # @attr [String] value
+    # @attr [String] name 
+    # @attr [String] value 
     class ScopeEntry
       attr_accessor :name
       
