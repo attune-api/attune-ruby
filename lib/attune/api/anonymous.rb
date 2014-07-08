@@ -13,7 +13,7 @@ module Attune
       # Create anonymous visitor
       #
       # @return [Attune::Model::AnonymousResult]
-      # @raise [ArgumentError] if user_agent is not provided
+      # @raise [ArgumentError] for invalid inputs
       # @raise [Faraday::Error::ClientError] if the request fails or exceeds the timeout
       # @raise [AuthenticationException] if authorization header not accepted
       def create ()
@@ -35,7 +35,8 @@ module Attune
         post_body = nil
         response = @client.request(:POST, path, {:params=>queryopts,:headers=>headers, :body=>post_body })
         if response
-          Attune::Model::AnonymousResult.new(JSON.parse(response.body))else
+          Attune::Model::AnonymousResult.new(JSON.parse(response.body))
+        else
           mockProc = MOCKS['Anonymous.create']
           if mockProc
             mockResponse = mockProc.call()
@@ -51,14 +52,14 @@ module Attune
       #
       # @param [String] anonymous
       # @return [Attune::Model::Customer]
-      # @raise [ArgumentError] if user_agent is not provided
+      # @raise [ArgumentError] for invalid inputs
       # @raise [Faraday::Error::ClientError] if the request fails or exceeds the timeout
       # @raise [AuthenticationException] if authorization header not accepted
       def get (anonymous)
         query_param_keys = []
 
         # verify existence of params
-        raise "anonymous is required" if anonymous.nil?
+        raise ArgumentError, "anonymous is required" if anonymous.nil?
         # set default values and merge with input
         options = {
         :anonymous => anonymous}
@@ -76,7 +77,8 @@ module Attune
         post_body = nil
         response = @client.request(:GET, path, {:params=>queryopts,:headers=>headers, :body=>post_body })
         if response
-          Attune::Model::Customer.new(JSON.parse(response.body))else
+          Attune::Model::Customer.new(JSON.parse(response.body))
+        else
           mockProc = MOCKS['Anonymous.get']
           if mockProc
             mockResponse = mockProc.call(anonymous)
@@ -92,15 +94,15 @@ module Attune
       #
       # @param [String] anonymous
       # @param [Attune::Model::Customer] body
-      # @raise [ArgumentError] if user_agent is not provided
+      # @raise [ArgumentError] for invalid inputs
       # @raise [Faraday::Error::ClientError] if the request fails or exceeds the timeout
       # @raise [AuthenticationException] if authorization header not accepted
       def update (anonymous,body)
         query_param_keys = []
 
         # verify existence of params
-        raise "anonymous is required" if anonymous.nil?
-        raise "body is required" if body.nil?
+        raise ArgumentError, "anonymous is required" if anonymous.nil?
+        raise ArgumentError, "body is required" if body.nil?
         # set default values and merge with input
         options = {
         :anonymous => anonymous,
@@ -131,10 +133,10 @@ module Attune
 
           else
             if body.respond_to?("to_body".to_sym)
-    	        post_body = body.to_body
-    	      else
-    	        post_body = body
-    	      end
+              post_body = body.to_body
+            else
+              post_body = body
+            end
           end
         end
         @client.request(:PUT, path, {:params=>queryopts,:headers=>headers, :body=>post_body})

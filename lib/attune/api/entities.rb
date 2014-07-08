@@ -13,7 +13,7 @@ module Attune
       # List all blacklist entries for your account.
       #
       # @return [Attune::Model::BlacklistGetResponse]
-      # @raise [ArgumentError] if user_agent is not provided
+      # @raise [ArgumentError] for invalid inputs
       # @raise [Faraday::Error::ClientError] if the request fails or exceeds the timeout
       # @raise [AuthenticationException] if authorization header not accepted
       def blacklist_get ()
@@ -35,7 +35,8 @@ module Attune
         post_body = nil
         response = @client.request(:GET, path, {:params=>queryopts,:headers=>headers, :body=>post_body })
         if response
-          Attune::Model::BlacklistGetResponse.new(JSON.parse(response.body))else
+          Attune::Model::BlacklistGetResponse.new(JSON.parse(response.body))
+        else
           mockProc = MOCKS['Entities.blacklist_get']
           if mockProc
             mockResponse = mockProc.call()
@@ -51,7 +52,7 @@ module Attune
       #
       # @param [Attune::Model::BlacklistParams] body
       # @return [Attune::Model::BlacklistSaveResponse]
-      # @raise [ArgumentError] if user_agent is not provided
+      # @raise [ArgumentError] for invalid inputs
       # @raise [Faraday::Error::ClientError] if the request fails or exceeds the timeout
       # @raise [AuthenticationException] if authorization header not accepted
       def blacklist_save (body)
@@ -85,15 +86,16 @@ module Attune
 
           else
             if body.respond_to?("to_body".to_sym)
-    	        post_body = body.to_body
-    	      else
-    	        post_body = body
-    	      end
+              post_body = body.to_body
+            else
+              post_body = body
+            end
           end
         end
         response = @client.request(:POST, path, {:params=>queryopts,:headers=>headers, :body=>post_body })
         if response
-          Attune::Model::BlacklistSaveResponse.new(JSON.parse(response.body))else
+          Attune::Model::BlacklistSaveResponse.new(JSON.parse(response.body))
+        else
           mockProc = MOCKS['Entities.blacklist_save']
           if mockProc
             mockResponse = mockProc.call(body)
@@ -109,14 +111,14 @@ module Attune
       #
       # @param [Attune::Model::RankingParams] body
       # @return [Attune::Model::RankedEntities]
-      # @raise [ArgumentError] if user_agent is not provided
+      # @raise [ArgumentError] for invalid inputs
       # @raise [Faraday::Error::ClientError] if the request fails or exceeds the timeout
       # @raise [AuthenticationException] if authorization header not accepted
       def get_rankings (body)
         query_param_keys = []
 
         # verify existence of params
-        raise "body is required" if body.nil?
+        raise ArgumentError, "body is required" if body.nil?
         # set default values and merge with input
         options = {
         :body => body}
@@ -145,15 +147,16 @@ module Attune
 
           else
             if body.respond_to?("to_body".to_sym)
-    	        post_body = body.to_body
-    	      else
-    	        post_body = body
-    	      end
+              post_body = body.to_body
+            else
+              post_body = body
+            end
           end
         end
         response = @client.request(:POST, path, {:params=>queryopts,:headers=>headers, :body=>post_body })
         if response
-          Attune::Model::RankedEntities.new(JSON.parse(response.body))else
+          Attune::Model::RankedEntities.new(JSON.parse(response.body))
+        else
           mockProc = MOCKS['Entities.get_rankings']
           if mockProc
             mockResponse = mockProc.call(body)
@@ -169,14 +172,14 @@ module Attune
       #
       # @param [Attune::Model::BatchRankingRequest] body
       # @return [Attune::Model::BatchRankingResult]
-      # @raise [ArgumentError] if user_agent is not provided
+      # @raise [ArgumentError] for invalid inputs
       # @raise [Faraday::Error::ClientError] if the request fails or exceeds the timeout
       # @raise [AuthenticationException] if authorization header not accepted
       def batch_get_rankings (body)
         query_param_keys = []
 
         # verify existence of params
-        raise "body is required" if body.nil?
+        raise ArgumentError, "body is required" if body.nil?
         # set default values and merge with input
         options = {
         :body => body}
@@ -205,15 +208,16 @@ module Attune
 
           else
             if body.respond_to?("to_body".to_sym)
-    	        post_body = body.to_body
-    	      else
-    	        post_body = body
-    	      end
+              post_body = body.to_body
+            else
+              post_body = body
+            end
           end
         end
         response = @client.request(:POST, path, {:params=>queryopts,:headers=>headers, :body=>post_body })
         if response
-          Attune::Model::BatchRankingResult.new(JSON.parse(response.body))else
+          Attune::Model::BatchRankingResult.new(JSON.parse(response.body))
+        else
           mockProc = MOCKS['Entities.batch_get_rankings']
           if mockProc
             mockResponse = mockProc.call(body)

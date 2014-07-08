@@ -67,8 +67,6 @@ module Attune
 
     def request(http_method, path, opts)
       adapter_method = adapter.method(http_method.downcase)
-      headers = {'Content-Type' => 'application/json' }
-      headers.merge! opts[:headers] if opts[:headers]
       adapter_method.call do |req|
         req.url path
         req.headers['Content-Type'] = 'application/json'
