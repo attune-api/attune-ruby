@@ -72,7 +72,11 @@ module Attune
         req.headers['Content-Type'] = 'application/json'
         req.headers.merge! opts[:headers] if opts[:headers]
         req.params = opts[:params] if opts[:params]
-        req.body = ::JSON.dump(opts[:body]) if opts[:body]
+        if opts[:body]
+          body_content = ::JSON.dump(opts[:body])
+          req.headers['Content-Encoding'] = 'gzip'
+          req.body =
+        end
       end
     rescue Errno::ENOENT, Faraday::Error::ClientError => e
       handle_exception(e)
