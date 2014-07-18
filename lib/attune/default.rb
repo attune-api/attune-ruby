@@ -1,6 +1,7 @@
 require 'attune/param_flattener'
 require "attune/call_dropping"
 require "attune/json_logger"
+require "attune/gzip_request"
 require "attune/net_http_persistent"
 
 module Attune
@@ -25,8 +26,8 @@ module Attune
       # Allow one retry per request
       builder.request :retry, 1
 
-      # Log all requests
-      builder.use Attune::JsonLogger
+      # Gzip requests, Faraday handles responses automatically
+      builder.use Attune::GzipRequest
 
       # Raise exceptions for HTTP 4xx/5xx
       builder.response :raise_error
