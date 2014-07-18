@@ -26,6 +26,9 @@ module Attune
       # Allow one retry per request
       builder.request :retry, 1
 
+      # Log all requests
+      builder.use Attune::JsonLogger
+
       # Gzip requests, Faraday handles responses automatically
       builder.use Attune::GzipRequest
 
