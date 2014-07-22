@@ -24,7 +24,6 @@ module Attune
         r_id: SecureRandom.uuid,
         status: response.status,
         ua: env[:request_headers]['User-Agent'],
-        enc: env[:request_headers]['Content-Encoding'],
         method: env[:method],
         perf: {
           total: elapsed_time * 1000
