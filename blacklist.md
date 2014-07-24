@@ -12,7 +12,8 @@ scope.value = 'sale'
 params.scope = [scope]
 params.active_from = '2012-06-04 19:00:00'
 params.active_to = '2012-06-06 19:00:00'
-client.entities.blacklist_save(params)
+response = client.entities.blacklist_save(params)
+blacklist_id = response.id
 ```
 
 ## Retrieve a blacklist entry
@@ -26,7 +27,7 @@ blacklist = client.entities.blacklist_get(blacklist_id)
 ``` ruby
 params = Attune::Model::BlacklistParams.new
 params.disabled = true
-client.entities.blacklist_update(params)
+client.entities.blacklist_update(blacklist_id, params)
 ```
 
 ## Delete a blacklist entry
@@ -36,6 +37,7 @@ client.entities.blacklist_delete(blacklist_id)
 ```
 
 ## Get all blacklists for your account
+
 ``` ruby
 all_blacklists = client.entities.blacklist_get_all(blacklist_id)
 ```
