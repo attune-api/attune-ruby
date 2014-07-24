@@ -2,13 +2,19 @@ module Attune
   module Model
     # 
     #
+    # @attr [String] id 
     # @attr [String] result 
     class BlacklistSaveResponse
+      attr_accessor :id
+      
+
       attr_accessor :result
       
 
       def initialize(attributes = {})
         return if attributes.empty?
+        # Workaround since JSON.parse has accessors as strings rather than symbols
+        @id = attributes["id"] || attributes[:"id"]
         # Workaround since JSON.parse has accessors as strings rather than symbols
         @result = attributes["result"] || attributes[:"result"]
         
@@ -29,6 +35,7 @@ module Attune
       private
       # :internal => :external
       ATTRIBUTE_MAP = {
+          :id => :id,
           :result => :result
 
         }

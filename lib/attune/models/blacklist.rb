@@ -3,17 +3,26 @@ module Attune
     # 
     #
     # @attr [String] id 
+    # @attr [String] entity_type 
+    # @attr [String] consumer 
+    # @attr [String] start_date 
     # @attr [String] created_date 
     # @attr [String] updated_date 
-    # @attr [String] entity_type 
     # @attr [String] end_date 
-    # @attr [String] start_date 
-    # @attr [String] consumer 
     # @attr [Array<String>] scope 
     # @attr [Array<String>] ids 
     # @attr [Boolean] disabled 
     class Blacklist
       attr_accessor :id
+      
+
+      attr_accessor :entity_type
+      
+
+      attr_accessor :consumer
+      
+
+      attr_accessor :start_date
       
 
       attr_accessor :created_date
@@ -22,16 +31,7 @@ module Attune
       attr_accessor :updated_date
       
 
-      attr_accessor :entity_type
-      
-
       attr_accessor :end_date
-      
-
-      attr_accessor :start_date
-      
-
-      attr_accessor :consumer
       
 
       attr_accessor :scope
@@ -48,17 +48,17 @@ module Attune
         # Workaround since JSON.parse has accessors as strings rather than symbols
         @id = attributes["id"] || attributes[:"id"]
         # Workaround since JSON.parse has accessors as strings rather than symbols
-        @created_date = attributes["created_date"] || attributes[:"created_date"]
-        # Workaround since JSON.parse has accessors as strings rather than symbols
-        @updated_date = attributes["updated_date"] || attributes[:"updated_date"]
-        # Workaround since JSON.parse has accessors as strings rather than symbols
-        @entity_type = attributes["entity_type"] || attributes[:"entity_type"]
-        # Workaround since JSON.parse has accessors as strings rather than symbols
-        @end_date = attributes["end_date"] || attributes[:"end_date"]
-        # Workaround since JSON.parse has accessors as strings rather than symbols
-        @start_date = attributes["start_date"] || attributes[:"start_date"]
+        @entity_type = attributes["entityType"] || attributes[:"entity_type"]
         # Workaround since JSON.parse has accessors as strings rather than symbols
         @consumer = attributes["consumer"] || attributes[:"consumer"]
+        # Workaround since JSON.parse has accessors as strings rather than symbols
+        @start_date = attributes["startDate"] || attributes[:"start_date"]
+        # Workaround since JSON.parse has accessors as strings rather than symbols
+        @created_date = attributes["createdDate"] || attributes[:"created_date"]
+        # Workaround since JSON.parse has accessors as strings rather than symbols
+        @updated_date = attributes["updatedDate"] || attributes[:"updated_date"]
+        # Workaround since JSON.parse has accessors as strings rather than symbols
+        @end_date = attributes["endDate"] || attributes[:"end_date"]
         value = attributes["scope"] || attributes[:"scope"]
         if value.is_a?(Array)
           @scope = value
@@ -90,12 +90,12 @@ module Attune
       # :internal => :external
       ATTRIBUTE_MAP = {
           :id => :id,
-          :created_date => :created_date,
-          :updated_date => :updated_date,
-          :entity_type => :entity_type,
-          :end_date => :end_date,
-          :start_date => :start_date,
+          :entity_type => :entityType,
           :consumer => :consumer,
+          :start_date => :startDate,
+          :created_date => :createdDate,
+          :updated_date => :updatedDate,
+          :end_date => :endDate,
           :scope => :scope,
           :ids => :ids,
           :disabled => :disabled
