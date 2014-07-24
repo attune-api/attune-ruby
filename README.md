@@ -86,6 +86,8 @@ client = Attune::Client.new
 auth_token = client.get_auth_token('my-client-id', 'my-client-secret')
 ```
 
+Also see [Blacklist examples](blacklist.md) for examples of our blacklist API.
+
 ### Configuration
 
 Attune can be configured globally
