@@ -10,8 +10,8 @@ scope = Attune::Model::ScopeEntry.new
 scope.name = 'page'
 scope.value = 'sale'
 params.scope = [scope]
-params.active_from = '2012-06-04 19:00:00'
-params.active_to = '2012-06-06 19:00:00'
+params.active_from = DateTime.now
+params.active_to = DateTime.now + 7
 response = client.entities.blacklist_save(params)
 blacklist_id = response.id
 ```
