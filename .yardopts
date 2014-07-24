@@ -1,2 +1,4 @@
 --markup-provider=redcarpet
 --markup=markdown
+-
+blacklist.md
