@@ -13,10 +13,12 @@ require "attune/models/blacklist_params"
 require "attune/models/ranked_entities"
 require "attune/models/ranking_params"
 require "attune/models/customer"
+require "attune/models/blacklist_update_response"
 require "attune/models/blacklist"
 require "attune/models/batch_ranking_request"
 require "attune/models/scope_entry"
 require "attune/models/blacklist_save_response"
+require "attune/models/blacklist_delete_response"
 require "attune/models/batch_ranking_result"
 
 module Attune
