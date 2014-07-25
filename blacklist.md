@@ -39,5 +39,5 @@ client.entities.blacklist_delete(blacklist_id)
 ## Get all blacklists for your account
 
 ``` ruby
-all_blacklists = client.entities.blacklist_get_all(blacklist_id)
+all_blacklists = client.entities.blacklist_get_all()
 ```
