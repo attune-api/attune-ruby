@@ -66,4 +66,34 @@ describe "remote requests" do
       ranking.sort.should == entities.map(&:to_s).sort
     end
   end
+
+  it 'should call blacklist api' do
+    # create
+    params = Attune::Model::BlacklistParams.new
+    params.ids = [1,2,3]
+    params.entity_type = 'products'
+    scope = Attune::Model::ScopeEntry.new
+    scope.name = 'page'
+    scope.value = 'sale'
+    params.scope = [scope]
+    params.active_from = DateTime.now
+    params.active_to = DateTime.now + 7
+    response = client.entities.blacklist_save(params)
+    blacklist_id = response.id
+    blacklist_id.should match(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)
+    # get
+    blacklist = client.entities.blacklist_get(blacklist_id)
+    blacklist.id.should == blacklist_id
+    # update
+    params = Attune::Model::BlacklistParams.new
+    params.disabled = true
+    client.entities.blacklist_update(blacklist_id, params)
+    blacklist = client.entities.blacklist_get(blacklist_id)
+    blacklist.disabled.should == true
+    # get all
+    all_blacklists = client.entities.blacklist_get_all()
+    all_blacklists.blacklists.should be_an Array
+    # delete
+    client.entities.blacklist_delete(blacklist_id)
+  end
 end
