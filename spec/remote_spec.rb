@@ -11,7 +11,7 @@ describe "remote requests" do
     pending "REMOTE_ENDPOINT required for remote spec" unless endpoint
     pending "AUTH_TOKEN required for remote spec" unless auth_token
   end
-  let!(:client){ Attune::Client.new(endpoint: endpoint, auth_token: auth_token) }
+  let!(:client){ Attune::Client.new(endpoint: endpoint, auth_token: auth_token, timeout: 20) }
 
   it "can request an auth_token given a client id and secret" do
     pending "CLIENT_ID required for get_auth_token spec" unless client_id
