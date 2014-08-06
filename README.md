@@ -71,6 +71,10 @@ class ProductsController
     ranking_params.entity_type = 'products'
     ranking_params.user_agent = request.env["HTTP_USER_AGENT"]
     ranking_params.ids = products.map(&:id)
+    scope = Attune::Model::ScopeEntry.new
+    scope.name = 'category'
+    scope.value = 'pants'
+    ranking_params.scope = [scope]
     ranking = attune_client.entities.get_rankings(ranking_params)
     products.sort_by do |product|
       ranking.ranking.index(product.id.to_s)
