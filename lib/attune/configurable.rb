@@ -6,7 +6,9 @@ module Attune
       :middleware,
       :disabled,
       :exception_handler,
-      :timeout
+      :timeout,
+      :logger,
+      :logging_enabled
     ]
 
     # The Authorization token
@@ -24,6 +26,12 @@ module Attune
 
     # Time (in seconds) to wait for requests to finish
     attr_accessor :timeout
+
+    # Logger to write request statistics to
+    attr_accessor :logger
+
+    # Turn request logging on
+    attr_accessor :logging_enabled
 
     # How to deal with HTTP exceptions
     # @param [:mock, :raise] handler Method used for handling exceptions.

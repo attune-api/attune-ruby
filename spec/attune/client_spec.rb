@@ -7,7 +7,6 @@ describe Attune::Client do
   context "with defaults" do
     let(:options){ {} }
     specify { expect(subject.endpoint).to eq(Attune::Default::ENDPOINT) }
-    specify { expect(subject.middleware).to eq(Attune::Default::MIDDLEWARE) }
   end
   context "with custom endpoint" do
     let(:endpoint){ 'http://example.com/' }

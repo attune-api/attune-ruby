@@ -100,8 +100,33 @@ module Attune
 
     def adapter
       raise DisabledException if disabled?
-      Faraday.new(url: endpoint, builder: middleware, request: {timeout: timeout}) do |connection|
+      effective_middleware = middleware || default_middleware
+      Faraday.new(url: endpoint, builder: effective_middleware, request: {timeout: timeout}) do |connection|
         connection.authorization :Bearer, auth_token unless !auth_token
+      end
+    end
+
+    def default_middleware
+      Faraday::Builder.new do |builder|
+        # Needed for encoding of BATCH GET requests
+        builder.use Attune::ParamFlattener
+
+        builder.use Attune::CallDropping
+
+        builder.request  :url_encoded
+
+        # Allow one retry per request
+        builder.request :retry, 1
+
+        builder.use Attune::JsonLogger, logger if logging_enabled
+
+        # Gzip requests, Faraday handles responses automatically
+        builder.use Attune::Gzip
+
+        # Raise exceptions for HTTP 4xx/5xx
+        builder.response :raise_error
+
+        builder.adapter :attune_http_persistent
       end
     end
   end
