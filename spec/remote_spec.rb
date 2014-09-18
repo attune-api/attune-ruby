@@ -87,6 +87,7 @@ describe "remote requests" do
     # update
     params = Attune::Model::BlacklistParams.new
     params.disabled = true
+    params.entity_type = 'products'
     client.entities.blacklist_update(blacklist_id, params)
     blacklist = client.entities.blacklist_get(blacklist_id)
     blacklist.disabled.should == true
