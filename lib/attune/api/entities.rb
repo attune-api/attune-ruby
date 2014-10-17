@@ -274,6 +274,8 @@ module Attune
         #resource path
         path = "/entities/ranking".sub('{format}','json')
 
+        
+
         # pull querystring keys from options
         queryopts = options.select do |key,value|
           query_param_keys.include? key
@@ -301,6 +303,11 @@ module Attune
             end
           end
         end
+
+        if !post_body.has_key?("anonymous".to_sym)
+          post_body['anonymous'] = SecureRandom.uuid
+        end
+
         response = @client.request(:POST, path, {:params=>queryopts,:headers=>headers, :body=>post_body })
         if response
           Attune::Model::RankedEntities.new(JSON.parse(response.body))

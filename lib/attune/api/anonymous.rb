@@ -59,7 +59,11 @@ module Attune
         query_param_keys = []
 
         # verify existence of params
-        raise ArgumentError, "anonymous is required" if anonymous.nil?
+        #raise ArgumentError, "anonymous is required" if anonymous.nil?
+        if anonymous == nil
+          anonymous = SecureRandom.uuid
+        end
+
         raise ArgumentError, "body is required" if body.nil?
         # set default values and merge with input
         options = {
@@ -112,7 +116,11 @@ module Attune
         query_param_keys = []
 
         # verify existence of params
-        raise ArgumentError, "anonymous is required" if anonymous.nil?
+        # raise ArgumentError, "anonymous is required" if anonymous.nil?
+        if anonymous == nil
+          anonymous = SecureRandom.uuid
+        end
+
         # set default values and merge with input
         options = {
         :anonymous => anonymous}

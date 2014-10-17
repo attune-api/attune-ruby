@@ -70,6 +70,7 @@ module Attune
       adapter_method.call do |req|
         req.url path
         req.headers['Content-Type'] = 'application/json'
+        req.headers['User-Agent'] = 'Attune RClient ' + Attune::VERSION
         req.headers.merge! opts[:headers] if opts[:headers]
         req.params = opts[:params] if opts[:params]
         req.body = ::JSON.dump(opts[:body]) if opts[:body]

@@ -26,17 +26,19 @@ describe "remote requests" do
   end
 
   it "can bind and get an anonymous user" do
-    client.anonymous.update('654321', Attune::Model::Customer.new(customer:'foobar'))
-    customer = client.anonymous.get('654321')
+    uuid = SecureRandom.uuid
+    client.anonymous.update(uuid, Attune::Model::Customer.new(customer:'foobar'))
+    customer = client.anonymous.get(uuid)
     customer.customer.should == 'foobar'
   end
 
   let(:entities){ [202875,202876,202874,202900,202902,202898,202905,200182,200181,185940,188447,185932,190589,1238689589] }
   describe "get_rankings" do
     before(:each) do
-      anonymous_result = client.anonymous.create
+      # anonymous_result = client.anonymous.create
       params = Attune::Model::RankingParams.new
-      params.anonymous = anonymous_result.id
+      # params.anonymous = anonymous_result.id
+      # params.anonymous = SecureRandom.uuid
       params.view = 'b/mens-pants'
       params.entity_type = 'products'
       params.ids = entities
@@ -50,9 +52,10 @@ describe "remote requests" do
 
   describe "multi_get_rankings" do
     before(:each) do
-      anonymous_result = client.anonymous.create
+      # anonymous_result = client.anonymous.create
       params = Attune::Model::RankingParams.new
-      params.anonymous = anonymous_result.id
+      # params.anonymous = anonymous_result.id
+      params.anonymous = SecureRandom.uuid
       params.view = 'b/mens-pants'
       params.entity_type = 'products'
       params.ids = entities
