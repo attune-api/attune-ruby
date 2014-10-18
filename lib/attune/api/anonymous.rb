@@ -33,10 +33,10 @@ module Attune
 
         headers = nil
         post_body = nil
-        response = @client.request(:POST, path, {:params=>queryopts,:headers=>headers, :body=>post_body })
-        if response
-          Attune::Model::AnonymousResult.new(JSON.parse(response.body))
-        else
+        #response = @client.request(:POST, path, {:params=>queryopts,:headers=>headers, :body=>post_body })
+        #if response
+        #  Attune::Model::AnonymousResult.new(JSON.parse(response.body))
+        #else
           mockProc = MOCKS['Anonymous.create']
           if mockProc
             mockResponse = mockProc.call()
@@ -44,7 +44,7 @@ module Attune
           else
             nil
           end
-        end
+        # end
         
       end
       
