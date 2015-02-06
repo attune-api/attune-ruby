@@ -2,16 +2,26 @@ module Attune
   module Model
     # Inputs for ranking a set of ids for a particular user.
     #
+    # @attr [String] user_agent 
+    # @attr [String] ip 
+    # @attr [Array<Attune::Model::ScopeEntry>] scope 
     # @attr [String] anonymous 
     # @attr [String] entity_type 
     # @attr [Array<String>] ids 
-    # @attr [String] view 
-    # @attr [String] user_agent 
-    # @attr [Array<Attune::Model::ScopeEntry>] scope 
-    # @attr [String] ip 
-    # @attr [Array<Attune::Model::int>] quantities 
     # @attr [String] customer 
+    # @attr [Array<Attune::Model::int>] quantities 
+    # @attr [String] application 
+    # @attr [String] view 
     class RankingParams
+      attr_accessor :user_agent
+      
+
+      attr_accessor :ip
+      
+
+      attr_accessor :scope
+      
+
       attr_accessor :anonymous
       
 
@@ -21,26 +31,29 @@ module Attune
       attr_accessor :ids
       
 
-      attr_accessor :view
-      
-
-      attr_accessor :user_agent
-      
-
-      attr_accessor :scope
-      
-
-      attr_accessor :ip
+      attr_accessor :customer
       
 
       attr_accessor :quantities
       
 
-      attr_accessor :customer
+      attr_accessor :application
+      
+
+      attr_accessor :view
       
 
       def initialize(attributes = {})
         return if attributes.empty?
+        # Workaround since JSON.parse has accessors as strings rather than symbols
+        @user_agent = attributes["userAgent"] || attributes[:"user_agent"]
+        # Workaround since JSON.parse has accessors as strings rather than symbols
+        @ip = attributes["ip"] || attributes[:"ip"]
+        value = attributes["scope"] || attributes[:"scope"]
+        if value.is_a?(Array)
+          @scope = value.map{ |v| ScopeEntry.new(v) }
+
+        end
         # Workaround since JSON.parse has accessors as strings rather than symbols
         @anonymous = attributes["anonymous"] || attributes[:"anonymous"]
         # Workaround since JSON.parse has accessors as strings rather than symbols
@@ -51,23 +64,16 @@ module Attune
 
         end
         # Workaround since JSON.parse has accessors as strings rather than symbols
-        @view = attributes["view"] || attributes[:"view"]
-        # Workaround since JSON.parse has accessors as strings rather than symbols
-        @user_agent = attributes["userAgent"] || attributes[:"user_agent"]
-        value = attributes["scope"] || attributes[:"scope"]
-        if value.is_a?(Array)
-          @scope = value.map{ |v| ScopeEntry.new(v) }
-
-        end
-        # Workaround since JSON.parse has accessors as strings rather than symbols
-        @ip = attributes["ip"] || attributes[:"ip"]
+        @customer = attributes["customer"] || attributes[:"customer"]
         value = attributes["quantities"] || attributes[:"quantities"]
         if value.is_a?(Array)
           @quantities = value
 
         end
         # Workaround since JSON.parse has accessors as strings rather than symbols
-        @customer = attributes["customer"] || attributes[:"customer"]
+        @application = attributes["application"] || attributes[:"application"]
+        # Workaround since JSON.parse has accessors as strings rather than symbols
+        @view = attributes["view"] || attributes[:"view"]
         
 
       end
@@ -86,15 +92,16 @@ module Attune
       private
       # :internal => :external
       ATTRIBUTE_MAP = {
+          :user_agent => :userAgent,
+          :ip => :ip,
+          :scope => :scope,
           :anonymous => :anonymous,
           :entity_type => :entityType,
           :ids => :ids,
-          :view => :view,
-          :user_agent => :userAgent,
-          :scope => :scope,
-          :ip => :ip,
+          :customer => :customer,
           :quantities => :quantities,
-          :customer => :customer
+          :application => :application,
+          :view => :view
 
         }
     end

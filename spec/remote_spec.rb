@@ -38,10 +38,11 @@ describe "remote requests" do
       # anonymous_result = client.anonymous.create
       params = Attune::Model::RankingParams.new
       # params.anonymous = anonymous_result.id
-      # params.anonymous = SecureRandom.uuid
+      params.anonymous = SecureRandom.uuid
       params.view = 'b/mens-pants'
       params.entity_type = 'products'
       params.ids = entities
+      params.application = 'myapp'
       @result = client.entities.get_rankings(params)
     end
     it "can get ranked entities" do
@@ -59,6 +60,7 @@ describe "remote requests" do
       params.view = 'b/mens-pants'
       params.entity_type = 'products'
       params.ids = entities
+      params.application = 'myapp'
       batch_request = Attune::Model::BatchRankingRequest.new
       batch_request.requests = [params]
       @results = client.entities.batch_get_rankings(batch_request)
