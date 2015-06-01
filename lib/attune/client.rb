@@ -117,7 +117,7 @@ module Attune
         builder.request  :url_encoded
 
         # Allow one retry per request
-        builder.request :retry, 1
+        builder.request :retry, 0
 
         builder.use Attune::JsonLogger, logger if logging_enabled
 
