@@ -116,13 +116,13 @@ module Attune
 
         builder.request  :url_encoded
 
-        # Allow one retry per request
-        builder.request :retry, 1
-
         builder.use Attune::JsonLogger, logger if logging_enabled
 
         # Gzip requests, Faraday handles responses automatically
         builder.use Attune::Gzip
+
+        # Allow one retry per request
+        builder.request :retry, 1
 
         # Raise exceptions for HTTP 4xx/5xx
         builder.response :raise_error
