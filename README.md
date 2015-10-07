@@ -118,9 +118,9 @@ for more details.
 
 ### Debugging 
  How to identify attune vs control in the browser?
- You can identify the cell assignment by fetching the data in the below variable
- # @attr [String] cell Cell assignment
- https://github.com/attune-api/attune-ruby/blob/master/lib/attune/models/ranked_entities.rb
+    You can identify the cell assignment by fetching the data in the below variable
+        # @attr [String] cell Cell assignment
+            https://github.com/attune-api/attune-ruby/blob/master/lib/attune/models/ranked_entities.rb
 
 ### Testing
 
